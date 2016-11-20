@@ -2,7 +2,6 @@
 # Mass RE tool, generates large amounts of .ptx
 use Data::Dumper;
 use List::MoreUtils qw{any};
-use Switch;
 no warnings "once";
 sub cartesian{
     my @C=[];
