@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
     cudaMemcpy(devC, C,sizeFloatC, cudaMemcpyHostToDevice);
 
 	//================================== Launch our kernel	==============================//
-    ms = assemblySgemm("sgemm_tn_128x128", devRand, devC, devA, devB, M, N, K, hStart, hStop);
+    ms = assemblySgemm("sgemm_tn_192x192", devRand, devC, devA, devB, M, N, K, hStart, hStop);
     gflops(M, K, N, ms);
 	// Get back our results from each kernel
     cudaMemcpy(C, devC, sizeFloatC, cudaMemcpyDeviceToHost);

@@ -1,6 +1,7 @@
 # Kernel: sgemm_tn_192x192
 
 # Copyright 2014 Nervana Systems Inc. All rights reserved.
+# Copyright 2015~2016 Xiuxia Zhang
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -107,7 +108,6 @@
 -:-:-:-:00 S2R blkB, SR_CTAID.Z;
 -:-:-:-:00 S2R blkZ, SR_CTAID.X;
 
-//<SCHEDULE_BLOCK>
 -:-:-:-:00 MOV k, param_k;
 -:-:-:-:00 MOV loop, RZ;
 -:-:-:-:00 STS.128 [RZ + addr_zero], RZ;
@@ -115,14 +115,10 @@
 join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ * 4), 0..35);
 </CODE>
 
-// tidX = (tid & 63) << 2
-// tidY = (tid >> 6) & 3
-//tidX: 5,4,3,2,1,0,z,z
 -:-:-:-:00 LOP.AND tid63, tid, 63;
 -:-:-:-:00 SHL tidX, tid63, 2;
 -:-:-:-:00 BFE.U32 tidY, tid, 0x206; // 2 bits at position 6
 
-//xsb:todo:should be param_lda4/ldb4
 -:-:-:-:00 MOV lda, param_lda8;
 -:-:-:-:00 MOV ldb, param_ldb8;
 -:-:-:-:00 SHR.U32 lda, lda, 4;
@@ -130,14 +126,6 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 -:-:-:-:00 MOV ldaz, param_ldaz;
 -:-:-:-:00 MOV ldbz, param_ldbz;
 
-//---------------------------------------------------
-//tidX = (tid & 63) << 2
-//tidY = (tid >> 6) & 3
-//tidX: 5,4,3,2,1,0,z,z
-//tidY: 7,6
-//trackA = A + (blkA*192 + lda*tidY + tidX) << 2
-//txa= blkA*128 + blkA*64 + tidX = 192*blkA + tidX
-//ta = blkA*192 + lda*tidY + tidX
 -:-:-:-:00 SHL    txa, blkA, 7;
 -:-:-:-:00 ISCADD txa, blkA, txa, 6;
 -:-:-:-:00 IADD   txa, txa, tidX;
@@ -145,55 +133,29 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 -:-:-:-:00 ISCADD txa_shl, tidY, txa, 8;
 -:-:-:-:00 SHL txa_shl, txa_shl, 2;
 
-//-:-:-:-:00 IMAD ta, ldaz, blkZ, ta;
 
-//ta = lda*tidY + txa
-//
-//-------------------------------------
-//trackA = A + ta;
 -:-:-:-:00 MOV param_A_base_lo, param_A[0];
 -:-:-:-:00 MOV param_A_base_hi, param_A[1];
 -:-:-:-:00 SHL ta_shl, ta, 2;
 -:-:-:-:00 IADD trackA0.CC, ta_shl, param_A_base_lo;
 -:-:-:-:00 IADD.X trackA1, RZ, param_A_base_hi;
-//-------------------------------------
-//P5 = (txa < m) && (tidX < 192)  
 -:-:-:-:00 ISETP.LT.AND P5, PT, txa, param_m, PT;
-//-:-:-:-:00 ISETP.LT.AND P5, PT, tidX, 192, P5;
-//----------------------------------------------------
-// trackB = B + (blkB*192 + ldb*tidY + tidX) << 2
 -:-:-:-:00 SHL    txb, blkB, 7;
 -:-:-:-:00 ISCADD txb, blkB, txb, 6;
 -:-:-:-:00 IADD txb, txb, tidX;
-//txb = blkB*192 + tidX
 
 -:-:-:-:00 IMAD tb, ldb, tidY, txb;
-//-:-:-:-:00 IMAD tb, ldbz, blkZ, tb;
-//tb = blkB*192 + ldb*tidY + tidX
-//-------------------------------------
-//trackB = B + tb
 -:-:-:-:00 MOV param_B_base_lo, param_B[0];
 -:-:-:-:00 MOV param_B_base_hi, param_B[1];
 -:-:-:-:00 SHL tb_shl, tb, 2;
 -:-:-:-:00 IADD trackB0.CC, tb_shl, param_B_base_lo;
 -:-:-:-:00 IADD.X trackB1, RZ, param_B_base_hi;
-//-------------------------------------
-//P6 = (txb < n) && (tidX < 192)
 -:-:-:-:00 ISETP.LT.AND P6, PT, txb, param_n, PT;
-//-:-:-:-:00 ISETP.LT.AND P6, PT, tidX, 192, P6;
-//----------------------------------------------------
-//tidX = (tid & 63) << 2
-//tidY = (tid >> 6) & 3
-//writeS = (256*tidY + tidX) * 4
-//xsb
 -:-:-:-:00 SHR tid1, tidX, 1;
 -:-:-:-:00 ISCADD writeS, tidY, tid1, 8;
 -:-:-:-:00 SHL writeS, writeS, 2;
 -:-:-:-:00 LOP.XOR writeS, writeS, 4x<256*4*2>;
-//----------------------------------------------------
 
-// readAs  = (((tid & 0x70) >> 3) | (tid & 1)) << 3
-////readAs= 6,5,4,0,z,z,z
 -:-:-:-:00 LOP.AND tid1, tid, 1;
 -:-:-:-:00 LOP.AND readAs, tid, 0x70;
 -:-:-:-:00 SHR.U32 readAs, readAs, 3;
@@ -201,39 +163,18 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 -:-:-:-:00 SHL readAs, readAs, 3;
 
 
-// readBs = ((tid128 >> 4) | ((tid >> 1) & 7)) << 4 + 4096;
-// readBs:7,3,2,1
-//tid128 = 7,z,z,z,z,z,z,z (7 z)
 -:-:-:-:00 LOP.AND tid128, tid, 128;
-//tid7=3,2,1
 -:-:-:-:00 BFE.U32 tid7, tid, 0x301; // 3 bits at position 1
 -:-:-:-:00 SHR.U32 readBs, tid128, 4;
 -:-:-:-:00 LOP.OR readBs, readBs, tid7;
-//readBs = readBs * 8 +  4x<256*4>
-//readBs = <7,3,2,1,z,z,z> + 4x<256*4>
 -:-:-:-:00 ISCADD readBs, readBs, 4x<256*4>, 3;
-//-----------------------------------------------------
-// Grab a seed for this thread
-// (blkB*gridDimA*256 + blkA*256 + tid) & (1024*256 - 1)
 -:-:-:-:00 MOV flag, param_flags;
-//-:-:-:-:00 LOP.AND.NZ P1, RZ, flag, 0x1;
-//set P6 as false
-//-:-:-:-:00 ISETP.LT.AND P1, PT, RZ, RZ, !PT;
 -:-:-:-:00 MOV dimA, gridDimA;
 -:-:-:-:00 ISCADD tbid, blkA, tid, 8;
-//-:-:-:-:00 XMAD.U16.U16 dimA, blkB, dimA, RZ;
 -:-:-:-:00 IMAD dimA, blkB, dimA, RZ;
 -:-:-:-:00 ISCADD tbid, dimA, tbid, 8;
 -:-:-:-:00 LOP.AND seed, tbid, 1x<2048*32 - 1>;
-//-:-:-:-:00 LEA Rand0.CC, seed, param_Rand[0], 2;
-//-:-:-:-:00 LEA.HI.X Rand1, seed, param_Rand[1], RZ, 2;
-//-:-:-:-:00 MOV param_A_base_lo, param_Rand[0];
-//-:-:-:-:00 MOV param_A_base_hi, param_Rand[1];
-//-:-:-:-:00 SHL ta_shl, seed, 2;
-//-:-:-:-:00 IADD Rand0.CC, ta_shl, param_A_base_lo;
-//-:-:-:-:00 IADD.X Rand1, RZ, param_A_base_hi;
 
-//move debug
 -:-:-:-:00 MOV param_A_base_lo, param_debug[0];
 -:-:-:-:00 MOV param_A_base_hi, param_debug[1];
 -:-:-:-:00 MOV debug0, RZ;
@@ -241,49 +182,25 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 -:-:-:-:00 IADD debug0.CC, txa_shl, param_A_base_lo;
 -:-:-:-:00 IADD.X debug1, param_A_base_hi, RZ;
 
-//-:-:-:-:00 @P1 LD.E.CS seed, [Rand];
-//</SCHEDULE_BLOCK>
-//-----------------------------------------------------
 REMAINDER:
 
-//<SCHEDULE_BLOCK>
 
 <CODE>
     return q{
-//-----------------------------------------------------
-//bDoRemainder = k & 3 && k > 4
-//P1 = k&3 && k>4
 -:-:-:-:00 LOP.AND k7, k, 3;
 -:-:-:-:00 ISETP.EQ.AND P4, PT, k7, RZ, PT;
 -:-:-:-:00 ISETP.GT.AND P1, PT, k, 4, !P4;
-//-----------------------------------------------------
-//P5 = txa < m
-//P6 = txb < n
-//P2 = tidY < k && txa < m  for LDG A
-//P3 = tidY < k && txb < n  for LDG B
 
 -:-:-:-:00 ISETP.LT.AND P2, PT, tidY, k, P5;
 -:-:-:-:00 ISETP.LT.AND P3, PT, tidY, k, P6;
-//-----------------------------------------------------
-//for remainder, we should load zeros into loadA/loadB
-//random data in loadA/loadB would lead to wrong result into register block
 -:-:-:-:00 @P2 LDG.E.128 loadA, [trackA];
 -:-:-:-:00 @P3 LDG.E.128 loadB, [trackB];
 
 -:-:-:-:00 @!P2 LDS.U.128 loadA, [RZ + addr_zero];
 -:-:-:-:00 @!P3 LDS.U.128 loadB, [RZ + addr_zero];
-//-----------------------------------------------------
-//-:-:-:-:00 ST.E [debug0], loadB0;
-//-:-:-:-:00 ST.E [debug0 + 4], loadB1;
-//-:-:-:-:00 ST.E [debug0 + 8], loadB2;
-//-:-:-:-:00 ST.E [debug0 + 12], loadB3;
-//-:-:-:-:00 EXIT;
     };
 </CODE>
 
-//</SCHEDULE_BLOCK>
-//-----------------------------------------------------
-//STS A
 T:-:D:S:00 TEXDEPBAR 0x0;
 -:-:-:-:00 NOP;
 -:-:-:-:00 NOP;
@@ -294,34 +211,22 @@ T:-:D:S:00 TEXDEPBAR 0x0;
 
 -:-:-:-:00 @P5 STS.64 [writeS + 4x<0*256>], loadA0;
 -:-:-:-:00 @P5 STS.64 [writeS + 4x<0*256+128>], loadA2;
-//-----------------------------------------------------
-//trackA next four col
 -:-:-:-:00 IADD trackA0.CC, trackA0, param_lda8;
 -:-:-:-:00 IADD.X trackA1, trackA1, RZ;
-//-----------------------------------------------------
-//STS B
 -:-:-:-:00 @P6 STS.64 [writeS + 4x<4*256>], loadB0;
 -:-:-:-:00 @P6 STS.64 [writeS + 4x<4*256+128>], loadB2;
-//-----------------------------------------------------
-//trackB next four row
 -:-:-:-:00 IADD trackB0.CC, trackB0, param_ldb8;
 -:-:-:-:00 IADD.X trackB1, trackB1, RZ;
-//-----------------------------------------------------
-//do LDG before first iter  
-//$k_end = 8
 -:-:D:S:00 ISETP.GE.AND P2, PT, k, 8, P5;
 -:-:D:S:00 ISETP.GE.AND P3, PT, k, 8, P6;
 -:-:D:-:00 @P2 LDG.E.128 loadA, [trackA];
 -:-:D:-:00 @P3 LDG.E.128 loadB, [trackB];
 -:-:-:-:00 @!P2 LDS.U.128 loadA, [RZ + addr_zero];
 -:-:-:-:00 @!P3 LDS.U.128 loadB, [RZ + addr_zero];
-//-----------------------------------------------------
-//swap readAs/readBs/writeS
 -:-:-:-:00 LOP.XOR readAs, readAs, 4x<256*4*2>;
 -:-:-:-:00 LOP.XOR readBs, readBs, 4x<256*4*2>;
 -:-:D:-:00 BAR.SYNC 0;
 -:-:-:-:00 LOP.XOR writeS, writeS, 4x<256*4*2>;
-//-----------------------------------------------------
 <CODE>
     my $k_end = 8;
     our %insert =
