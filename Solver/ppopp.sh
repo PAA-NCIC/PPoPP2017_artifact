@@ -1,6 +1,6 @@
 #generate ptx file
-mkdir -p ptxgen/data/ptx
 <<BLOCK
+mkdir -p ptxgen/data/ptx
 echo "generating sass files in ptxgen/data/ptx directory..."
 echo ".................................................................."
 #ptxgen/ptxgen -a=sm_35
@@ -50,7 +50,8 @@ echo ".................................................................."
 echo "Running opcode solvers............................................"
 echo "It may take 10 miniutes ....................................."
 echo ".................................................................."
-python opcode/opcode.py sm35.sass
+#time python opcode/opcode.py sm35.sass  >opcode.txt
 echo "Runing modifier solvers ..................."
-python modifer/modifer.py sm35.sass
+#python modifer/modifer.py sm35.sass >modifier.txt
 echo "Runing operand solvers ...................."
+time python operand/operand.py opcode.sass >operand.txt

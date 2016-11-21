@@ -65,6 +65,7 @@ if __name__ == "__main__":
                 break
             #ATOM.E.ADD.F32.FTZ.RN R0, [R2], R0; /* 0x68380000001c0802 */
             list=line.split()
+            #list.pop(0)
             origin=Inst(list)
             #origin.printInst()
             enc = list[len(list)-2]

@@ -215,12 +215,12 @@ REMAINDER:
 -:-:-:-:00 ISETP.LT.AND P2, PT, tidY, k, P5;
 -:-:-:-:00 ISETP.LT.AND P3, PT, tidY, k, P6;
 
--:-:-:-:00 @P2 LD.E.128 loadA, [trackA];
--:-:-:-:00 @P3 LD.E.128 loadB, [trackB];
+-:-:-:-:00 @P2 LDG.E.128 loadA, [trackA];
+-:-:-:-:00 @P3 LDG.E.128 loadB, [trackB];
 
 -:-:-:-:00 @!P2 LDS.U.128 loadA, [RZ + addr_zero];
 -:-:-:-:00 @!P3 LDS.U.128 loadB, [RZ + addr_zero];
-
+T:-:D:S:00 TEXDEPBAR 0x0;
     // Vec 4 and scalar loads
     } : q{
 
@@ -299,8 +299,8 @@ j1c62 => "-:-:-:-:00 ISETP.GE.AND P0, PT, k, $k_end, PT;\n",
 
         ($vec ? 
             (
-j0c62 => "-:G:D:-:00 \@P2 LD.E.128 loadA, [trackA];\n",
-j1c53 => "-:G:D:-:00 \@P3 LD.E.128 loadB, [trackB];\n",
+j0c62 => "-:G:D:-:00 \@P2 LDG.E.128 loadA, [trackA];\n",
+j1c53 => "-:G:D:-:00 \@P3 LDG.E.128 loadB, [trackB];\n",
             ) : 
             (
 j0c10 => "-:-:-:-:00 \@P2 LD.E.CI loadA0, [trackA + 4x<0>];\n",
@@ -330,6 +330,8 @@ j6c61 => "-:-:-:-:00 \@P0 LOP.XOR readAs, readAs, 4x<128*8*2>;\n" ,
 j6c62 => "-:-:-:-:00 \@P0 LOP.XOR readBs, readBs, 4x<128*8*2>;\n" ,
 j7c62 => "-:-:-:-:00 \@P0 LOP.XOR writeS, writeS, 4x<128*8*2>;\n" ,
 j5c29  => "-:-:-:-:00 IADD32I k, k, -8;\n",
+#j5c63  => "-:-:-:-:00 TEXDEPBAR 0x0; \n",
+j5c63  => "T:-:D:S:00 TEXDEPBAR 0x0; \n",
 
 j7c63 => "-:-:D:-:00 \@P0 BRA.U LOOP;\n" .
 "-:-:D:-:00 \@P1 BRA.U REMAINDER;\n",

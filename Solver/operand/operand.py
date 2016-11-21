@@ -176,7 +176,7 @@ if __name__ == "__main__":
                 print "..........................................................."
                 print "(Line", count, "of", sys.argv[1],") operand combination type:", origin.operandType
                 for k in range(len(pp)):
-                    if k >= len(origin.operand):
+                    if k >= len(origin.operand) -1 :
                         operandtype = origin.operandType[len(origin.operand)-1]
                     else:
                         operandtype = origin.operandType[k]
