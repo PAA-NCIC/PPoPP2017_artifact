@@ -264,14 +264,14 @@ else{
 #$insert{"j${j}c5"} = sprintf "-:-:-:-:00 NOP;\n",;
 #$insert{"j${j}c7"} = sprintf "-:-:-:-:00 NOP;\n",;
 
-$insert{"j${j}c23"} = sprintf "-:-:-:-:00 %s LDS.64 j%dAy0, [readAs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c5"}  = sprintf "-:-:-:-:00 %s LDS.64 j%dBx0, [readBs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c35"} = sprintf "-:-:-:-:00 %s LDS.64 j%dAy2, [readAs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c11"} = sprintf "-:-:-:-:00 %s LDS.64 j%dBx2, [readBs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c41"} = sprintf "-:-:-:-:00 %s LDS.64 j%dAy4, [readAs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c17"} = sprintf "-:-:-:-:00 %s LDS.64 j%dBx4, [readBs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c47"} = sprintf "-:-:-:-:00 %s LDS.64 j%dAy6, [readAs + 4x<%d*128 + 66>];\n", $rsPred, $nOdd, $rsOffset;
-$insert{"j${j}c59"} = sprintf "-:-:-:-:00 %s LDS.64 j%dBx6, [readBs + 4x<%d*128 + 66>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c23"} = sprintf "T:-:D:S:00 %s LDS.64 j%dAy0, [readAs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c5"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dBx0, [readBs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c35"} = sprintf "T:-:D:S:00 %s LDS.64 j%dAy2, [readAs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c11"} = sprintf "T:-:D:S:00 %s LDS.64 j%dBx2, [readBs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c41"} = sprintf "T:-:D:S:00 %s LDS.64 j%dAy4, [readAs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c17"} = sprintf "T:-:D:S:00 %s LDS.64 j%dBx4, [readBs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c47"} = sprintf "T:-:D:S:00 %s LDS.64 j%dAy6, [readAs + 4x<%d*128 + 66>];\n", $rsPred, $nOdd, $rsOffset;
+$insert{"j${j}c59"} = sprintf "T:-:D:S:00 %s LDS.64 j%dBx6, [readBs + 4x<%d*128 + 66>];\n", $rsPred, $nOdd, $rsOffset;
 
 }
         foreach my $c (0 .. 63)
