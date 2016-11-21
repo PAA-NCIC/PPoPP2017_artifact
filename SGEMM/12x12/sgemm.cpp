@@ -156,6 +156,7 @@ int main(int argc, char* argv[])
     else
         printf("Passed result check.... \n\n");
 
+#if 0
     FILE *filec=fopen("c.txt", "w");
     for (int i = 0; i < M; i ++) {
         int index, j;
@@ -166,6 +167,7 @@ int main(int argc, char* argv[])
         fprintf(filec, "\n");
     }
     fclose(filec);
+#endif
 
 	// Cleanup and shutdown of cuda
 	cudaFree(devRand);
