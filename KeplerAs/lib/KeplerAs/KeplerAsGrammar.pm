@@ -280,7 +280,7 @@ our %grammar =
     { type => $cmpT,  code => 0xb500000000000001, rule => qr"^$pred?FCMP$fcmp$ftz $r0, $r8, $f20, $r39;"o,            },
     ],
     FFMA     => [
-                  { type => $x32T,  code => 0xcc00000400000002, rule => qr"^$pred?FFMA$ftz$rnd$sat $r0, $r8, $cr20, $r39;"o,         },
+                  { type => $x32T,  code => 0xcc00000000000002, rule => qr"^$pred?FFMA$ftz$rnd$sat $r0, $r8, $cr20, $r39;"o,         },
                   { type => $x32T,  code => 0xcc00000000000002, rule => qr"^$pred?FFMA$ftz$rnd$sat $r0, $r8, $r39s20, $c20s39;"o,     },
                   { type => $x32T,  code => 0x9400000000000001, rule => qr"^$pred?FFMA$ftz$rnd$sat $r0, $r8, $f20, $r39;"o,     },
                 ],
