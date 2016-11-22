@@ -1,4 +1,7 @@
-# PPoPP2017_artifact
-This is code in our PPoPP 2017 paper: 
-The code is composed as three part currently: KeplerAs assembler, optimized SGEMMm, and GPU ISA encoding Solver.
-Check the script seperately, and run to get result.
+## PPoPP 2017 Artifact for our paper:
+Demystifying GPU Microarchitecture to Tune SGEMM
+
+These codes are corresponding to section 3 (Instruction solver and GPU assembler KeplerAs), section 4(SGEMM implementation), and section 5(SGEMM performance evaluation)
+Follow the instructions in each directory, and validate the functionality and performance results. 
+
+If you have any question, please feel free to contact me: zhangxiuxia1@gmail.com

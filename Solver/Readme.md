@@ -1,7 +1,5 @@
 ##Solver is to crack GPU ISA encodings
 
-##Solver is to crack GPU ISA encodings
-
 Output:
 
 * bit position of opcode
