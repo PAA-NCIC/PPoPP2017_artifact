@@ -4,6 +4,47 @@ import subprocess
 import struct
 import sys
 import os
+def check_mode(arch):
+    if (arch == "SM21" or arch=="Fermi" or arch == "SM35" or arch=="Kepler"):
+        return 1
+    elif (arch == "SM52" or arch == "Mawell"):
+        return 2
+    else:
+        return 0
+
+def dump(newcode, mode, arch):
+    ##Raw binary
+    if mode == 1:
+        #print newcode
+        #ff = '0x%016x' % newcode 
+        base=int(newcode, 16)
+        ff="tmp.bin"
+        fout = open(ff, 'wb')
+        fout.write(struct.pack('<Q', int(base)))
+        fout.close()
+        #nvdisasm -b  SM35 ff
+        #redirect stderr to stdout
+        cmd = 'nvdisasm -b SM35 %s 2>&1' % ff
+        tmp = os.popen(cmd).read()
+        rmfile = 'rm %s' % ff
+        os.system(rmfile)
+        return tmp
+    elif mode == 2:
+        if arch == "Maxwell" or arch == "SM52":
+            f = open("test_sm52.cubin",'rb+')  
+            f.seek(808) 
+            base=int(newcode, 16)
+            f.write(struct.pack('Q', int(base)))
+            f.close()
+            cmd = 'cuobjdump --gpu-architecture sm_52 --dump-sass test_sm52.cubin 2>&1'
+            tmp = os.popen(cmd).read()
+            return tmp
+        else: 
+            print "You need to provide a cubin template and position of first instruction !"
+            exit()
+    else:
+        print "Error dump mode !"
+        exit()
 
 class Inst:
     ### parse instruction to structure###
@@ -12,6 +53,9 @@ class Inst:
         l=len(inst)
         self.op = ""
         index = 0
+
+        if inst[0] == '{':
+            inst.pop(0)
         #check predicate, such as @P0
         if (inst[index].find("@") != -1):
             self.pred=inst[index]
@@ -30,6 +74,9 @@ class Inst:
 
 if __name__ == "__main__":
     count = 0;
+    print "......................................................................."
+    print " argv[1]: disasssembly file;"
+    print " argv[2]: arch: SM21|SM35|Maxwell|Kepler|SM52 "
     pos=Set([])
     #with open("sm35.sass") as f:
     with open(sys.argv[1]) as f:
@@ -51,6 +98,11 @@ if __name__ == "__main__":
                 newcode = base ^ mask
                 fname = hex(newcode)
                 #################### disassemble the new code ##################
+                mode = check_mode(sys.argv[2])
+                ff = '0x%016x' % newcode 
+                tmp = dump(ff, mode, sys.argv[2])
+
+                """
                 ff = '0x%016x' % newcode 
                 fout = open(ff, 'wb')
                 fout.write(struct.pack('<Q', int(newcode)))
@@ -59,11 +111,15 @@ if __name__ == "__main__":
                 tmp = os.popen(cmd).read()
                 rmfile = 'rm %s' % ff
                 os.system(rmfile)
+                """
 
                 ### compare the disassemble to check which field changes: opcode, operand or modifer ###
                 if tmp and tmp.find("?") == -1 and tmp.find("error") == -1:
                     instline=tmp.split("\n")
-                    inst = instline[1].split();
+                    if (mode == 1):
+                        inst = instline[1].split();
+                    else:
+                        inst = instline[5].split();
                     inst.pop(0)
                     #### parse the new generated disassembly ##
                     my=Inst(inst)
