@@ -50,8 +50,8 @@ echo ".................................................................."
 echo "Running opcode solvers............................................"
 echo "It may take 10 miniutes ....................................."
 echo ".................................................................."
-#time python opcode/opcode.py sm35.sass  >opcode.txt
+time python opcode/opcode.py sm35.sass Kepler >opcode.txt
 echo "Runing modifier solvers ..................."
-#python modifer/modifer.py sm35.sass >modifier.txt
+python modifer/modifer.py sm35.sass Kepler >modifier.txt
 echo "Runing operand solvers ...................."
-time python operand/operand.py opcode.sass >operand.txt
+time python operand/operand.py opcode.sass Kepler >operand.txt
