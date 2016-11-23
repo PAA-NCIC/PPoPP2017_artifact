@@ -9,6 +9,48 @@ from collections import defaultdict
 types=[]
 d=[]
 
+def check_mode(arch):
+    if (arch == "SM21" or arch=="Fermi" or arch == "SM35" or arch=="Kepler"):
+        return 1
+    elif (arch == "SM52" or arch == "Mawell"):
+        return 2
+    else:
+        return 0
+
+def dump(newcode, mode, arch):
+    ##Raw binary
+    if mode == 1:
+        #print newcode
+        #ff = '0x%016x' % newcode 
+        base=int(newcode, 16)
+        ff="tmp.bin"
+        fout = open(ff, 'wb')
+        fout.write(struct.pack('<Q', int(base)))
+        fout.close()
+        #nvdisasm -b  SM35 ff
+        #redirect stderr to stdout
+        cmd = 'nvdisasm -b SM35 %s 2>&1' % ff
+        tmp = os.popen(cmd).read()
+        rmfile = 'rm %s' % ff
+        os.system(rmfile)
+        return tmp
+    elif mode == 2:
+        if arch == "Maxwell" or arch == "SM52":
+            f = open("test_sm52.cubin",'rb+')  
+            f.seek(808) 
+            base=int(newcode, 16)
+            f.write(struct.pack('Q', int(base)))
+            f.close()
+            cmd = 'cuobjdump --gpu-architecture sm_52 --dump-sass test_sm52.cubin 2>&1'
+            tmp = os.popen(cmd).read()
+            return tmp
+        else: 
+            print "You need to provide a cubin template and position of first instruction !"
+            exit()
+    else:
+        print "Error dump mode !"
+        exit()
+
 def change(my, origin):
     if (my.op != origin.op):
         return -1
@@ -31,15 +73,23 @@ class Inst:
         self.op = ""
         self.dst=""
         self.src=""
-        end = l - 1
         begin = 0
+        index = 0
         self.probe= 0
         #check predicate, such as @ 
+        if inst[0] == '{':
+            inst.pop(0)
+
         if (inst[0].find("@") != -1):
             self.pred=inst[0]
             inst.pop(0)
         #opcode
-        op = inst[0].split(".");
+        #check opcode
+        if inst[index][len(inst[index]) - 1] == ";" :
+            str=inst[index][0:len(inst[index]) -1 ]
+        else:
+            str = inst[index]
+        op = str.split(".");
         self.op = op[0]
         self.modifier=Set([]);
         op.pop(0)
@@ -130,6 +180,8 @@ if __name__ == "__main__":
     print "......R:Register, I:Immediate, M:Memory, P:Predicate, C:constant......."
     print "......Instruction's operands are combinations of R, I, M, P, C........."
     print "......................................................................."
+    print " argv[1]: disasssembly file;"
+    print " argv[2]: arch: SM21|SM35|Maxwell|Kepler|SM52 "
     with open(sys.argv[1]) as f:
         for line in f:
             pos=Set([])
@@ -150,20 +202,16 @@ if __name__ == "__main__":
                     mask = 2**i
                     newcode = base ^ mask
                     fname = hex(newcode)
+                    ## mode 1: nvdisasm, raw binary, mode 2: cuobjdump, cubin ##
+                    mode = check_mode(sys.argv[2])
                     ff = '0x%016x' % newcode 
-                    fout = open(ff, 'wb')
-                    fout.write(struct.pack('<Q', int(newcode)))
-                    fout.close()
-                    #nvdisasm -b  SM35 ff
-                    #redirect stderr to stdout
-                    cmd = 'nvdisasm -b SM35 %s 2>&1' % ff
-                    tmp = os.popen(cmd).read()
-                    rmfile = 'rm %s' % ff
-                    os.system(rmfile)
-
+                    tmp = dump(ff, mode, sys.argv[2])
                     if tmp and tmp.find("?") == -1 and tmp.find("error") == -1:
                         instline=tmp.split("\n")
-                        inst = instline[1].split();
+                        if (mode == 1):
+                            inst = instline[1].split();
+                        else:
+                            inst = instline[5].split();
                         inst.pop(0)
                         inst.pop(len(inst) -1)
                         inst.pop(len(inst) -1)
@@ -176,12 +224,12 @@ if __name__ == "__main__":
                 print "..........................................................."
                 print "(Line", count, "of", sys.argv[1],") operand combination type:", origin.operandType
                 for k in range(len(pp)):
-                    if k >= len(origin.operand) -1 :
-                        operandtype = origin.operandType[len(origin.operand)-1]
+                    if k >= len(origin.operandType)-1 :
+                        operandtype = origin.operandType[len(origin.operandType)-1]
                     else:
                         operandtype = origin.operandType[k]
                     print k, "operand is", operandtype 
-                    print "Encoding is:", pp[k]
+                    #print "Encoding is:", pp[k]
                     print ""
     """
     for dd in d:
