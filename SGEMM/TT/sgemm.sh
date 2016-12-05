@@ -1,10 +1,8 @@
 #!/bin/bash
 
-##compile code ###
-make
 file="ppopp_time.txt";
 echo "our SGEMM and cuBLAS SGEMM peformance is writen in $file"
-for ((i = 768; i <= 768; i = i + i))
+for ((i = 512; i <= 4096; i = i + 512))
 do
     echo "Matrix dimension: [M, K, N] " $i, $i, $i
     ./sgemm $i $i $i >> $file
