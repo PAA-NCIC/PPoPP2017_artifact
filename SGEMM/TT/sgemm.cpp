@@ -117,7 +117,7 @@ int main(int argc, char* argv[])
 	// Get back our results from each kernel
     cudaMemcpy(C, devC, sizeFloatC, cudaMemcpyDeviceToHost);
 
-#if 1
+#if 0
     FILE *fp = fopen("c.txt", "w");
     for (int i = 0; i < M; i ++) {
         for (int j = 0; j < N; j ++)
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
     cudaMemcpy(cublasC, devC, sizeFloatC, cudaMemcpyDeviceToHost);
 
     //=========================check result compare our result with cuBLAS========================//
-#if 1
+#if 0
     fp = fopen("cublasc.txt", "w");
     for (int i = 0; i < M; i ++) {
         for (int j = 0; j < N; j ++)
