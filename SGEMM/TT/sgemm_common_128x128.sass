@@ -92,19 +92,6 @@ LOOP:
         my $rsOffset = ($j + 1) % 8;
         my $rsPred   = $j == 7 ? '@P0' : '   ';
 
-        #$insert{"j${j}c5"} = sprintf "-:G:D:-:01 %s LDS.64 j%dAy0, [readAs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c11"} = sprintf "-:G:D:-:01 %s LDS.64 j%dAy2, [readAs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c17"} = sprintf "-:G:D:-:01 %s LDS.64 j%dAy4, [readAs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c23"} = sprintf "-:G:D:-:01 %s LDS.64 j%dAy6, [readAs + 4x<%d*128 + 66>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c35"} = sprintf "-:G:D:-:01 %s LDS.64 j%dBx0, [readBs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c41"} = sprintf "-:G:D:-:01 %s LDS.64 j%dBx2, [readBs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c47"} = sprintf "-:G:D:-:01 %s LDS.64 j%dBx4, [readBs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
-        #$insert{"j${j}c59"} = sprintf "-:G:D:-:01 %s LDS.64 j%dBx6, [readBs + 4x<%d*128 + 66>];\n", $rsPred, $nOdd, $rsOffset;
-
-        # to avoid conflict with the second FFMA
-        # 5 11 17 59 are bank 2 friendly, two empty and two reuse
-        # 23 29 35 41 are bank 3 friendly, two empty and two reuse
-        # LDS.64 throught is higher
         $insert{"j${j}c5"}  = sprintf "-:G:D:-:01 %s LDS.64 j%dBx0, [readBs + 4x<%d*128 + 00>];\n", $rsPred, $nOdd, $rsOffset;
         $insert{"j${j}c11"} = sprintf "-:G:D:-:01 %s LDS.64 j%dBx2, [readBs + 4x<%d*128 + 2>];\n", $rsPred, $nOdd, $rsOffset;
         $insert{"j${j}c17"} = sprintf "-:G:D:-:01 %s LDS.64 j%dBx4, [readBs + 4x<%d*128 + 64>];\n", $rsPred, $nOdd, $rsOffset;
