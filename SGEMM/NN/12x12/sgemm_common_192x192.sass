@@ -1,0 +1,539 @@
+# sgemm_common_128x128
+
+# Copyright 2014 Nervana Systems Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#    http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+T:-:D:S:00 LDS.64 j0Ay0, [readAs + 4x<0*256 + 00>];
+T:-:D:S:00 LDS.64 j0Bx0, [readBs + 4x<0*256 + 00>];
+T:-:D:S:00 LDS.64 j0Ay2, [readAs + 4x<0*256 + 02>];
+T:-:D:S:00 LDS.64 j0Bx2, [readBs + 4x<0*256 + 128>];
+
+
+T:-:D:S:00 LDS.64 j0Ay4, [readAs + 4x<0*256 + 64>];
+T:-:D:S:00 LDS.64 j0Bx4, [readBs + 4x<0*256 + 32>];
+T:-:D:S:00 LDS.64 j0Ay6, [readAs + 4x<0*256 + 66>];
+T:-:D:S:00 LDS.64 j0Bx6, [readBs + 4x<0*256 + 160>];
+
+
+T:-:D:S:00 LDS.64 j0Ay8,  [readAs + 4x<0*256 + 128>];
+T:-:D:S:00 LDS.64 j0Bx8,  [readBs + 4x<0*256 + 64>];
+T:-:D:S:00 LDS.64 j0Ay10, [readAs + 4x<0*256 + 130>];
+T:-:D:S:00 LDS.64 j0Bx10, [readBs + 4x<0*256 + 192>];
+-:-:-:-:00 NOP;
+-:-:-:-:00 NOP;
+-:-:-:-:00 NOP;
+
+LOOP:
+
+<CODE>
+
+    our %insert;
+
+    my @cOrder;
+    my @swirl = ([0,2],[1,2],[1,0],[0,0]);
+    my @y = (0,1,4,5);
+#xsb:
+    push  @cOrder, [0,0];
+    push  @cOrder, [0,1];
+    push  @cOrder, [1,1];
+    push  @cOrder, [2,0];
+    push  @cOrder, [1,0];
+    push  @cOrder, [2,1];
+    push  @cOrder, [2,3];
+    push  @cOrder, [2,2];
+    push  @cOrder, [1,2];
+    push  @cOrder, [0,3];
+    push  @cOrder, [1,3];
+    push  @cOrder, [0,2];
+    push  @cOrder, [0,4];
+    push  @cOrder, [0,5];
+    push  @cOrder, [1,5];
+    push  @cOrder, [2,4];
+    push  @cOrder, [1,4];
+    push  @cOrder, [2,5];
+    push  @cOrder, [2,7];
+    push  @cOrder, [2,6];
+    push  @cOrder, [1,6];
+    push  @cOrder, [0,7];
+    push  @cOrder, [1,7];
+    push  @cOrder, [0,6];
+    push  @cOrder, [0,8];
+    push  @cOrder, [0,9];
+    push  @cOrder, [1,9];
+    push  @cOrder, [2,8];
+    push  @cOrder, [1,8];
+    push  @cOrder, [2,9];
+    push  @cOrder, [2,11];
+    push  @cOrder, [2,10];
+    push  @cOrder, [1,10];
+    push  @cOrder, [0,11];
+    push  @cOrder, [1,11];
+    push  @cOrder, [0,10];
+
+    push  @cOrder, [3,10];
+    push  @cOrder, [3,11];
+    push  @cOrder, [4,11];
+    push  @cOrder, [5,10];
+    push  @cOrder, [4,10];
+    push  @cOrder, [5,11];
+    push  @cOrder, [5,9];
+    push  @cOrder, [5,8];
+    push  @cOrder, [4,8];
+    push  @cOrder, [3,9];
+    push  @cOrder, [4,9];
+    push  @cOrder, [3,8];
+    push  @cOrder, [3,6];
+    push  @cOrder, [3,7];
+    push  @cOrder, [4,7];
+    push  @cOrder, [5,6];
+    push  @cOrder, [4,6];
+    push  @cOrder, [5,7];
+    push  @cOrder, [5,5];
+    push  @cOrder, [5,4];
+    push  @cOrder, [4,4];
+    push  @cOrder, [3,5];
+    push  @cOrder, [4,5];
+    push  @cOrder, [3,4];
+    push  @cOrder, [3,2];
+    push  @cOrder, [3,3];
+    push  @cOrder, [4,3];
+    push  @cOrder, [5,2];
+    push  @cOrder, [4,2];
+    push  @cOrder, [5,3];
+    push  @cOrder, [5,1];
+    push  @cOrder, [5,0];
+    push  @cOrder, [4,0];
+    push  @cOrder, [3,1];
+    push  @cOrder, [4,1];
+    push  @cOrder, [3,0];
+
+    push  @cOrder, [6,0];
+    push  @cOrder, [6,1];
+    push  @cOrder, [7,1];
+    push  @cOrder, [8,0];
+    push  @cOrder, [7,0];
+    push  @cOrder, [8,1];
+    push  @cOrder, [8,3];
+    push  @cOrder, [8,2];
+    push  @cOrder, [7,2];
+    push  @cOrder, [6,3];
+    push  @cOrder, [7,3];
+    push  @cOrder, [6,2];
+    push  @cOrder, [6,4];
+    push  @cOrder, [6,5];
+    push  @cOrder, [7,5];
+    push  @cOrder, [8,4];
+    push  @cOrder, [7,4];
+    push  @cOrder, [8,5];
+    push  @cOrder, [8,7];
+    push  @cOrder, [8,6];
+    push  @cOrder, [7,6];
+    push  @cOrder, [6,7];
+    push  @cOrder, [7,7];
+    push  @cOrder, [6,6];
+    push  @cOrder, [6,8];
+    push  @cOrder, [6,9];
+    push  @cOrder, [7,9];
+    push  @cOrder, [8,8];
+    push  @cOrder, [7,8];
+    push  @cOrder, [8,9];
+    push  @cOrder, [8,11];
+    push  @cOrder, [8,10];
+    push  @cOrder, [7,10];
+    push  @cOrder, [6,11];
+    push  @cOrder, [7,11];
+    push  @cOrder, [6,10];
+
+    push  @cOrder, [ 9, 10];
+    push  @cOrder, [ 9, 11];
+    push  @cOrder, [10, 11];
+    push  @cOrder, [11, 10];
+    push  @cOrder, [10, 10];
+    push  @cOrder, [11, 11];
+    push  @cOrder, [11, 9];
+    push  @cOrder, [11, 8];
+    push  @cOrder, [10, 8];
+    push  @cOrder, [ 9, 9];
+    push  @cOrder, [10, 9];
+    push  @cOrder, [ 9, 8];
+    push  @cOrder, [ 9, 6];
+    push  @cOrder, [ 9, 7];
+    push  @cOrder, [10, 7];
+    push  @cOrder, [11, 6];
+    push  @cOrder, [10, 6];
+    push  @cOrder, [11, 7];
+    push  @cOrder, [11, 5];
+    push  @cOrder, [11, 4];
+    push  @cOrder, [10, 4];
+    push  @cOrder, [ 9, 5];
+    push  @cOrder, [10, 5];
+    push  @cOrder, [ 9, 4];
+    push  @cOrder, [ 9, 2];
+    push  @cOrder, [ 9, 3];
+    push  @cOrder, [10, 3];
+    push  @cOrder, [11, 2];
+    push  @cOrder, [10, 2];
+    push  @cOrder, [11, 3];
+    push  @cOrder, [11, 1];
+    push  @cOrder, [11, 0];
+    push  @cOrder, [10, 0];
+    push  @cOrder, [ 9, 1];
+    push  @cOrder, [10, 1];
+    push  @cOrder, [ 9, 0];
+
+    my $out = '';
+    my $dualed = 0;
+    foreach my $j (0 .. 3)
+    {
+        my $odd      = $j & 1;
+        my $nOdd     = !$odd + 0;
+        my $rsOffset = ($j + 1) % 4;
+        my $rsPred   = $j == 3 ? '@P0' : '   ';
+
+
+        $insert{"j${j}c11"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dAy0,  [readAs + 4x<%d*256 + 0>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c41"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dBx0,  [readBs + 4x<%d*256 + 0>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c17"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dAy2,  [readAs + 4x<%d*256 + 2>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c47"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dBx2,  [readBs + 4x<%d*256 + 128>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c23"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dAy4,  [readAs + 4x<%d*256 + 64>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c53"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dBx4,  [readBs + 4x<%d*256 + 32>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c29"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dAy6,  [readAs + 4x<%d*256 + 66>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c59"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dBx6,  [readBs + 4x<%d*256 + 160>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c83"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dAy8,  [readAs + 4x<%d*256 + 128>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c119"} = sprintf "T:-:D:S:00 %s LDS.64 j%dBx8,  [readBs + 4x<%d*256 + 64>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c95"}  = sprintf "T:-:D:S:00 %s LDS.64 j%dAy10, [readAs + 4x<%d*256 + 130>];\n", $rsPred, $nOdd, $rsOffset;
+        $insert{"j${j}c131"} = sprintf "T:-:D:S:00 %s LDS.64 j%dBx10, [readBs + 4x<%d*256 + 192>];\n", $rsPred, $nOdd, $rsOffset;
+
+        foreach my $c (0 .. 143)
+        {
+            my ($x,$y) = @{$cOrder[$c]};
+            my $ins    = $insert{"j${j}c$c"} || '';
+            if(($c - 5) % 6 ==0){
+              if($ins){
+              }
+              else{
+                $ins = "T:-:D:S:00 NOP;\n";
+              }
+            }
+            my $wait   = $c == 0 ? '01' : '--';
+
+            my $stall  = (split "\n", $ins)[0] =~ /LDS|F2F|I2I|LDG|STS|BAR|BRA/ ? 0 : 1;
+
+            my $yield  = $c == 32 && $stall ? 'Y' : '-';
+            
+            my $ctrl;
+            if($ins){
+              $ctrl = "-:-:D:-:04";
+            }
+            else{
+              if(($c - 1) % 6 == 0 || ($c - 3) % 6 == 0){
+                $ctrl = "-:-:D:-:04";
+              }
+              else{
+                $ctrl = "-:-:D:-:05";
+              }
+            }
+
+            $out .= sprintf "%s      FFMA cx%dy%d, j%dBx%d, j%dAy%d, cx%dy%d;\n%s", $ctrl,  $x,$y,  $odd,$x,  $odd,$y,  $x,$y,  $ins;
+            #print $out;
+            #print "\n";
+        }
+    }
+    return $out;
+
+</CODE>
+//----------------------------------------------------------
+//-:-:-:-:00 I2F.F32.S32 cx0y0, tid;
+
+//----------------------------------------------------------
+-:-:-:-:00 S2R blockA, SR_CTAID.Y;
+-:-:-:-:00 S2R blockB, SR_CTAID.Z;
+-:-:-:-:00 S2R blockZ, SR_CTAID.X;
+
+-:-:-:-:00 MOV alpha, param_alpha;
+-:-:-:-:00 MOV beta, param_beta;
+-:-:-:-:00 MOV flags, param_flags;
+//----------------------------------------------------------
+//bit 0~4
+-:-:-:-:00 LOP.AND tid_31, tid, 31;
+//bit 5~6
+-:-:-:-:00 LOP.AND tid_96, tid, 96;
+//bit 7
+-:-:-:-:00 LOP.AND tid_128, tid, 128;
+//----------------------------------------------------------
+//##### for writeCs
+// writeCs = (readAs / 2) * 256 + readBs*2;
+//readAs=6,5,4,0,z,z,z,z
+//because readAs may add some "size" to swap buffer, LOP.AND is used to cut off it
+-:-:-:-:00 LOP.AND readAs, readAs, 0xfff;
+//readBs=<7,3,2,1,z,z,z>
+-:-:-:-:00 LOP.AND readBs, readBs, 0xfff;
+//readBs=<7,3,2,1,z,z,z,z>
+-:-:-:-:00 SHL readBs, readBs, 1;
+//readAs=6,5,4,0,z,z,z,z
+-:-:-:-:00 ISCADD writeCs, readAs, readBs, 6;
+//----------------------------------------------------------
+//##### for readCs
+// cx = tid_31 | (tid_128 >> 2);
+//tid_128=7,z,z,z,z,z,z,z
+//tid_31 = 4,3,2,1,0
+//cx00=7,4,3,2,1,0
+-:-:-:-:00 SHR.U32 cx00, tid_128, 2;
+-:-:-:-:00 LOP.OR cx00, tid_31, cx00;
+
+// readCs = ((tid_96 << 5) | cx) << 2;
+//readCs= 6,5,z,z,z,z,7,4,3,2,1,0
+-:-:-:-:00 SHL readCs, tid_96, 5;
+-:-:-:-:00 LOP.OR readCs, readCs, cx00;
+-:-:-:-:00 SHL readCs, readCs, 2;
+//----------------------------------------------------------
+//##### for trackC (C00y0)
+// cx = tid_31 | (tid_128 >> 2);
+// cx += blockB*192 = (blockB*128 + blockB*64);
+-:-:-:-:00 ISCADD cx00, blockB, cx00, 6;
+-:-:-:-:00 ISCADD cx00, blockB, cx00, 7;
+
+-:-:-:-:00 IADD cx64, cx00, 64;
+-:-:-:-:00 IADD cx128, cx00, 128;
+
+// cy = blockA*192 + (bit5~6)<<4 = (blockA*128 + blockA*64) + (tid_96>>1)
+-:-:-:-:00 SHR.U32 cy00, tid_96, 1;
+-:-:-:-:00 ISCADD cy00, blockA, cy00, 7;
+-:-:-:-:00 ISCADD cy00, blockA, cy00, 6;
+
+-:-:-:-:00 MOV ldc, param_ldc;
+-:-:-:-:00 IMAD ci, ldc, cy00, cx00;
+
+// ci = ldc*cy00 + cx00
+// trackC = C + (ci << 2)
+-:-:-:-:00 MOV param_A_base_lo, param_C[0];
+-:-:-:-:00 MOV param_A_base_hi, param_C[1];
+-:-:-:-:00 SHL ta_shl, ci, 2;
+-:-:-:-:00 IADD C00y0.CC, ta_shl, param_A_base_lo;
+-:-:-:-:00 IADD.X C00y1, RZ, param_A_base_hi;
+//----------------------------------------------------------
+// ldc1 ldc4 ldc60
+//ldc:in words, ldc1:in bytes, ldc4:4 row in bytes
+-:-:-:-:00 SHL ldc1, ldc, 2;
+-:-:-:-:00 SHL ldc4, ldc, 4;
+-:-:-:-:00 ISCADD ldc60, ldc, -ldc4, 8;
+//----------------------------------------------------------
+// ###for trackC04 trackC08 trackC12, dest for four rows in share memory
+// C04y0 = trackC + (ldc*4)
+-:-:-:-:00 IADD C04y0.CC, C00y0, ldc4;
+-:-:-:-:00 IADD.X C04y1, C00y1, RZ; 
+
+// C08y0 = trackC + (ldc*8)
+-:-:-:-:00 IADD C08y0.CC, C04y0, ldc4;
+-:-:-:-:00 IADD.X C08y1, C04y1, RZ; 
+
+// C012y0 = trackC + (ldc*12)
+-:-:-:-:00 IADD C12y0.CC, C08y0, ldc4;
+-:-:-:-:00 IADD.X C12y1, C08y1, RZ; 
+//----------------------------------------------------------
+
+-:-:-:-:00 IADD cy04, cy00, 4;
+-:-:-:-:00 IADD cy08, cy00, 8;
+-:-:-:-:00 IADD cy12, cy00, 12; 
+//----------------------------------------------------------
+
+<CODE>
+
+    my $out;
+    foreach my $y (0..11)
+    {
+        $out .=
+"-:-:-:-:00 IADD C00y0.CC, C00y0, ldc60;\n" .
+"-:-:-:-:00 IADD cy00, cy00, 60;\n" .
+"-:-:-:-:00 IADD.X C00y1, C00y1, RZ;\n" .
+"-:-:-:-:00 IADD C04y0.CC, C04y0, ldc60;\n" .
+"-:-:-:-:00 IADD cy04, cy04, 60;\n" .
+"-:-:-:-:00 IADD.X C04y1, C04y1, RZ;\n" .
+"-:-:-:-:00 IADD C08y0.CC, C08y0, ldc60;\n" .
+"-:-:-:-:00 IADD cy08, cy08, 60;\n" .
+"-:-:-:-:00 IADD.X C08y1, C08y1, RZ;\n" .
+"-:-:-:-:00 IADD C12y0.CC, C12y0, ldc60;\n" .
+"-:-:-:-:00 IADD cy12, cy12, 60;\n" .
+"-:-:-:-:00 IADD.X C12y1, C12y1, RZ;\n\n" if ($y == 4 || $y == 8);
+
+        $out .= sprintf(
+### put a row(4 words x 3) into c0~c11
+"-:-:-:-:00 FMUL c0,  cx0y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c1,  cx1y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c2,  cx2y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c3,  cx3y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c4,  cx4y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c5,  cx5y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c6,  cx6y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c7,  cx7y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c8,  cx8y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c9,  cx9y%d,  alpha;\n" .
+"-:-:-:-:00 FMUL c10, cx10y%d, alpha;\n" .
+"-:-:-:-:00 FMUL c11, cx11y%d, alpha;\n" ,
+            ($y) x 12);
+
+$out .= "-:-:-:-:00 CAL STORE_C;\n\n";
+    }
+    return $out;
+
+</CODE>
+
+-:-:-:-:00 EXIT;
+
+STORE_C:
+//----------------------------------------------------------
+//store a row into share memory
+//-:-:-:-:00 MOV c0, alpha;
+//-:-:-:-:00 I2F.F32.S32 c0, tid;
+//-:-:-:-:00 I2F.F32.S32 c1, tid;
+//-:-:-:-:00 I2F.F32.S32 c2, tid;
+//-:-:-:-:00 I2F.F32.S32 c3, tid;
+
+//-:-:-:-:00 I2F.F32.S32 c4, tid;
+//-:-:-:-:00 I2F.F32.S32 c5, tid;
+//-:-:-:-:00 I2F.F32.S32 c6, tid;
+//-:-:-:-:00 I2F.F32.S32 c7, tid;
+
+//-:-:-:-:00 I2F.F32.S32 c8, tid;
+//-:-:-:-:00 I2F.F32.S32 c9, tid;
+//-:-:-:-:00 I2F.F32.S32 c10, tid;
+//-:-:-:-:00 I2F.F32.S32 c11, tid;
+T:-:D:S:00 \@P0 TEXDEPBAR 0x0;
+-:-:-:-:00 STS.128 [writeCs+4x<00>], c0;
+-:-:-:-:00 STS.128 [writeCs+4x<64>], c4;
+-:-:-:-:00 STS.128 [writeCs+4x<128>], c8;
+-:-:D:S:00 BAR.SYNC 0;
+//----------------------------------------------------------
+//load C from share memory, four rows
+-:-:-:-:00 LDS c0, [readCs + 4x<0*256 + 00>];
+-:-:-:-:00 LDS c1, [readCs + 4x<0*256 + 64>];
+-:-:-:-:00 LDS c2, [readCs + 4x<0*256 + 128>];
+
+-:-:-:-:00 LDS c3, [readCs + 4x<1*256 + 00>];
+-:-:-:-:00 LDS c4, [readCs + 4x<1*256 + 64>];
+-:-:-:-:00 LDS c5, [readCs + 4x<1*256 + 128>];
+
+-:-:-:-:00 LDS c6,  [readCs + 4x<2*256 + 00>];
+-:-:-:-:00 LDS c7,  [readCs + 4x<2*256 + 64>];
+-:-:-:-:00 LDS c8,  [readCs + 4x<2*256 + 128>];
+
+-:-:-:-:00 LDS c9,  [readCs + 4x<3*256 + 00>];
+-:-:-:-:00 LDS c10, [readCs + 4x<3*256 + 64>];
+-:-:-:-:00 LDS c11, [readCs + 4x<3*256 + 128>];
+//----------------------------------------------------------
+//-:-:-:-:00 I2F.F32.S32 c0, tid;
+//-:-:-:-:00 I2F.F32.S32 c1, tid;
+//-:-:-:-:00 I2F.F32.S32 c2, tid;
+
+//-:-:-:-:00 I2F.F32.S32 c3, tid;
+//-:-:-:-:00 I2F.F32.S32 c4, tid;
+//-:-:-:-:00 I2F.F32.S32 c5, tid;
+
+//-:-:-:-:00 I2F.F32.S32 c6, tid;
+//-:-:-:-:00 I2F.F32.S32 c7, tid;
+//-:-:-:-:00 I2F.F32.S32 c8, tid;
+
+//-:-:-:-:00 I2F.F32.S32 c9, tid;
+//-:-:-:-:00 I2F.F32.S32 c10, tid;
+//-:-:-:-:00 I2F.F32.S32 c11, tid;
+//-:-:-:-:00 MOV c0, 90.0;
+
+//cx00 < n && P6 = (txb < n)
+-:-:-:-:00 ISETP.LT.AND P4, PT, cx00, param_n, PT; 
+//cx64 < n
+-:-:-:-:00 ISETP.LT.AND P5, PT, cx64, param_n, PT; 
+//cy00 < m  && cx00 < n 
+-:-:-:-:00 ISETP.LT.AND P0, PT, cy00, param_m, P4; 
+// cy00 < m && cx64 < n
+-:-:-:-:00 ISETP.LT.AND P1, PT, cy00, param_m, P5; 
+// cy04 < m && cx00 < m
+-:-:-:-:00 ISETP.LT.AND P2, PT, cy04, param_m, P4; 
+// cy04 < m && cx64 < m
+-:-:-:-:00 ISETP.LT.AND P3, PT, cy04, param_m, P5; 
+//cy00  
+
+
+//-:-:-:-:00 ST.E.CG [C00y0 + 4x<00>],  c0;
+//-:-:-:-:00 ST.E.CG [C00y0 + 4x<64>],  c1;
+//-:-:-:-:00 ST.E.CG [C00y0 + 4x<128>], c2;
+
+//-:-:-:-:00 ST.E.CG [C04y0 + 4x<00>],  c3;
+//-:-:-:-:00 ST.E.CG [C04y0 + 4x<64>],  c4;
+//-:-:-:-:00 ST.E.CG [C04y0 + 4x<128>], c5;
+
+//-:-:-:-:00 ST.E.CG [C08y0 + 4x<00>],  c6;
+//-:-:-:-:00 ST.E.CG [C08y0 + 4x<64>],  c7;
+//-:-:-:-:00 ST.E.CG [C08y0 + 4x<128>], c8;
+
+//-:-:-:-:00 ST.E.CG [C12y0 + 4x<00>],  c9;
+//-:-:-:-:00 ST.E.CG [C12y0 + 4x<64>],  c10;
+//-:-:-:-:00 ST.E.CG [C12y0 + 4x<128>], c11;
+-:-:-:-:00 ISETP.NE.AND P6, PT, beta, RZ, PT; 
+-:-:-:-:00 ISETP.LT.AND P4, PT, cx128, param_n, PT; 
+-:-:-:-:00 ISETP.LT.AND P5, PT, cx128, param_n, PT; 
+
+-:-:-:-:00 @P0 ST.E.CG [C00y0 + 4x<00>],  c0;
+-:-:-:-:00 @P1 ST.E.CG [C00y0 + 4x<64>],  c1;
+
+-:-:-:-:00 ISETP.LT.AND P0, PT, cy00, param_m, P4;
+-:-:-:-:00 @P0 ST.E.CG [C00y0 + 4x<128>], c2;
+-:-:-:-:00 IADD cy00, cy00, 1;
+
+
+-:-:-:-:00 @P2 ST.E.CG [C04y0 + 4x<00>],  c3;
+-:-:-:-:00 @P3 ST.E.CG [C04y0 + 4x<64>],  c4;
+-:-:-:-:00 ISETP.LT.AND P0, PT, cy04, param_m, P4;
+-:-:-:-:00 @P0 ST.E.CG [C04y0 + 4x<128>], c5;
+-:-:-:-:00 IADD cy04, cy04, 1;
+
+-:-:-:-:00 ISETP.LT.AND P4, PT, cx00, param_n, PT;
+-:-:-:-:00 ISETP.LT.AND P5, PT, cx64, param_n, PT;
+
+-:-:-:-:00 ISETP.LT.AND P0, PT, cy08, param_m, P4;
+-:-:-:-:00 ISETP.LT.AND P1, PT, cy08, param_m, P5;
+-:-:-:-:00 ISETP.LT.AND P2, PT, cy12, param_m, P4;
+-:-:-:-:00 ISETP.LT.AND P3, PT, cy12, param_m, P5;
+
+
+-:-:-:-:00 ISETP.LT.AND P4, PT, cx128, param_n, PT;
+
+-:-:-:-:00 @P0 ST.E.CG [C08y0 + 4x<00>],  c6;
+-:-:-:-:00 @P1 ST.E.CG [C08y0 + 4x<64>],  c7;
+-:-:-:-:00 ISETP.LT.AND P0, PT, cy08, param_m, P4;
+-:-:-:-:00 @P0 ST.E.CG [C08y0 + 4x<128>], c8;
+
+-:-:-:-:00 IADD   cy08, cy08, 1;
+
+-:-:-:-:00 @P2 ST.E.CG [C12y0 + 4x<00>],  c9;
+-:-:-:-:00 @P3 ST.E.CG [C12y0 + 4x<64>],  c10;
+-:-:-:-:00 ISETP.LT.AND P0, PT, cy12, param_m, P4;
+-:-:-:-:00 @P0 ST.E.CG [C12y0 + 4x<128>], c11;
+-:-:-:-:00 IADD   cy12, cy12, 1;
+
+//----------------------------------------------------------
+-:-:-:-:00 IADD C00y0.CC, C00y0, ldc1;
+-:-:-:-:00 IADD.X C00y1, C00y1, RZ;
+
+-:-:-:-:00 IADD C04y0.CC, C04y0, ldc1;
+-:-:-:-:00 IADD.X C04y1, C04y1, RZ;
+
+-:-:-:-:00 IADD C08y0.CC, C08y0, ldc1;
+-:-:-:-:00 IADD.X C08y1, C08y1, RZ;
+
+-:-:-:-:00 IADD C12y0.CC, C12y0, ldc1;
+-:-:-:-:00 IADD.X C12y1, C12y1, RZ;
+
+//----------------------------------------------------------
+-:-:-:-:00 RET;
