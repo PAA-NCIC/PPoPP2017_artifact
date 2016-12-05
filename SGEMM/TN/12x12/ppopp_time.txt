@@ -1,0 +1,40 @@
+
+Using: Id:0 Tesla K20m (3.5)
+Matrix Size 768 768 768 	iteration 10 times  
+Our SGEMM: Time 0.537072 ms, Performance: 1686.87 gflops
+Matrix Size 768 768 768 	iteration 10 times  
+cuBLAS: Time 0.449962 ms, Performance: 2013.44 gflops
+Passed result check.... 
+
+
+Using: Id:0 Tesla K20m (3.5)
+Matrix Size 1536 1536 1536 	iteration 10 times  
+Our SGEMM: Time 2.470573 ms, Performance: 2933.63 gflops
+Matrix Size 1536 1536 1536 	iteration 10 times  
+cuBLAS: Time 3.076064 ms, Performance: 2356.18 gflops
+Passed result check.... 
+
+
+Using: Id:0 Tesla K20m (3.5)
+Matrix Size 3072 3072 3072 	iteration 10 times  
+Our SGEMM: Time 19.228239 ms, Performance: 3015.46 gflops
+Matrix Size 3072 3072 3072 	iteration 10 times  
+cuBLAS: Time 22.253277 ms, Performance: 2605.55 gflops
+Passed result check.... 
+
+
+Using: Id:0 Tesla K20m (3.5)
+Matrix Size 6144 6144 6144 	iteration 10 times  
+Our SGEMM: Time 150.240021 ms, Performance: 3087.44 gflops
+Matrix Size 6144 6144 6144 	iteration 10 times  
+cuBLAS: Time 174.913361 ms, Performance: 2651.92 gflops
+Passed result check.... 
+
+
+Using: Id:0 Tesla K20m (3.5)
+Matrix Size 12288 12288 12288 	iteration 10 times  
+Our SGEMM: Time 1195.883423 ms, Performance: 3103.02 gflops
+Matrix Size 12288 12288 12288 	iteration 10 times  
+cuBLAS: Time 1371.685791 ms, Performance: 2705.32 gflops
+Passed result check.... 
+
