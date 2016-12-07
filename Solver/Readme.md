@@ -29,13 +29,13 @@ The workflow is composed of four stage:
 * Operand solver
     * R: Register I: Immediate C: constant[][] M: Memory P:Predicate
 
-Output of opcode solver for SM35 GPU:
+Output of opcode solver for SM35 GPU. The following 10 bits represents opcode encoding space of SM35 GPU, then opcode will be generated from these bits.
  
 
     [63,62,61,60,59,58,57,56,55,54, 1,0]
 
 
-Output of modifier solver for SM35 GPU(all the combinations modifier for each instructions):
+Partial output of modifier solver for SM35 GPU (all the modifier combinations for each instructions):
 
     
 	MOV modifier bits: [22]
@@ -98,7 +98,7 @@ Output of modifier solver for SM35 GPU(all the combinations modifier for each in
 	LD.CG.64.S R0, [R4]; /* 0xcd000000005c1000 */
 
  
-Output of operand solver for SM35 GPU:
+Partial output of operand solver for SM35 GPU is as follows.
 
 
     .......................................................................
