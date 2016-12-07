@@ -229,7 +229,7 @@ if __name__ == "__main__":
                     else:
                         operandtype = origin.operandType[k]
                     print k, "operand is", operandtype 
-                    #print "Encoding is:", pp[k]
+                    print "Encoding is:", pp[k]
                     print ""
     """
     for dd in d:

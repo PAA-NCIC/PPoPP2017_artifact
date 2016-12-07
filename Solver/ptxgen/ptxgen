@@ -288,13 +288,6 @@ my @entries=(
     [["atom"],["global","shared"],["cas"],["b64"],["ARGS"],["r64o"],["ptr"],["r64i"],["r64i"]],
     [["atom"],["global","shared"],["min","max"],$us64,["ARGS"],["r64o"],["ptr"],["r64i"]],
     [["atom"],["global","shared"],["add"],["u64"],["ARGS"],["r64o"],["ptr"],["r64i"]],
-    [["red"],["global","shared"],["and","or","xor"],["b32"],["ARGS"],["ptr"],["r32i"]],
-    [["red"],["global","shared"],["add"],$fus32,["ARGS"],["ptr"],["r32i"]],
-    [["red"],["global","shared"],["inc","dec"],["u32"],["ARGS"],["ptr"],["r32i"]],
-    [["red"],["global","shared"],["min","max"],$us32,["ARGS"],["ptr"],["r32i"]],
-    [["red"],["global","shared"],["and","or","xor"],["b64"],["ARGS"],["ptr"],["r64i"]],
-    [["red"],["global","shared"],["min","max"],$us64,["ARGS"],["ptr"],["r64i"]],
-    [["red"],["global","shared"],["add"],["u64"],["ARGS"],["ptr"],["r64i"]],
     [["vote"],["all","any","uni"],["pred"],["ARGS"],["po"],["pi"]],
     [["vote"],["ballot"],["b32"],["ARGS"],["r32o"],["pi"]],
 );
