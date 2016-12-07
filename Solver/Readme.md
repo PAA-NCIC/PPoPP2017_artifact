@@ -29,7 +29,76 @@ The workflow is composed of four stage:
 * Operand solver
     * R: Register I: Immediate C: constant[][] M: Memory P:Predicate
 
-sample output
+Output of opcode solver for SM35 GPU:
+ 
+
+    [63,62,61,60,59,58,57,56,55,54, 1,0]
+
+
+Output of modifier solver for SM35 GPU(all the combinations modifier for each instructions):
+
+    
+	MOV modifier bits: [22]
+	MOV R1, c[0x0][0x44]; /* 0x64c03c00089c0006 */
+	MOV.S R1, c[0x0][0x44]; /* 0x64c03c0008dc0006 */
+	LD modifier bits: [22, 55, 56, 57, 58, 59, 60]
+	LD.U8 R0, [R4]; /* 0xc0000000001c1000 */
+	LD.U8.S R0, [R4]; /* 0xc0000000005c1000 */
+	LD.E.U8 R0, [R4]; /* 0xc0800000001c1000 */
+	LD.E.U8.S R0, [R4]; /* 0xc0800000005c1000 */
+	LD.S8 R0, [R4]; /* 0xc1000000001c1000 */
+	LD.S8.S R0, [R4]; /* 0xc1000000005c1000 */
+	LD.E.S8 R0, [R4]; /* 0xc1800000001c1000 */
+	LD.E.S8.S R0, [R4]; /* 0xc1800000005c1000 */
+	LD.U16 R0, [R4]; /* 0xc2000000001c1000 */
+	LD.U16.S R0, [R4]; /* 0xc2000000005c1000 */
+	LD.E.U16 R0, [R4]; /* 0xc2800000001c1000 */
+	LD.E.U16.S R0, [R4]; /* 0xc2800000005c1000 */
+	LD.S16 R0, [R4]; /* 0xc3000000001c1000 */
+	LD.S16.S R0, [R4]; /* 0xc3000000005c1000 */
+	LD.E.S16 R0, [R4]; /* 0xc3800000001c1000 */
+	LD.E.S16.S R0, [R4]; /* 0xc3800000005c1000 */
+	LD R0, [R4]; /* 0xc4000000001c1000 */
+	LD.S R0, [R4]; /* 0xc4000000005c1000 */
+	LD.E R0, [R4]; /* 0xc4800000001c1000 */
+	LD.E.S R0, [R4]; /* 0xc4800000005c1000 */
+	LD.64 R0, [R4]; /* 0xc5000000001c1000 */
+	LD.64.S R0, [R4]; /* 0xc5000000005c1000 */
+	LD.E.64 R0, [R4]; /* 0xc5800000001c1000 */
+	LD.E.64.S R0, [R4]; /* 0xc5800000005c1000 */
+	LD.128 R0, [R4]; /* 0xc6000000001c1000 */
+	LD.128.S R0, [R4]; /* 0xc6000000005c1000 */
+	LD.E.128 R0, [R4]; /* 0xc6800000001c1000 */
+	LD.E.128.S R0, [R4]; /* 0xc6800000005c1000 */
+	LD.U.128 R0, [R4]; /* 0xc7000000001c1000 */
+	LD.U.128.S R0, [R4]; /* 0xc7000000005c1000 */
+	LD.E.U.128 R0, [R4]; /* 0xc7800000001c1000 */
+	LD.E.U.128.S R0, [R4]; /* 0xc7800000005c1000 */
+	LD.CG.U8 R0, [R4]; /* 0xc8000000001c1000 */
+	LD.CG.U8.S R0, [R4]; /* 0xc8000000005c1000 */
+	LD.E.CG.U8 R0, [R4]; /* 0xc8800000001c1000 */
+	LD.E.CG.U8.S R0, [R4]; /* 0xc8800000005c1000 */
+	LD.CG.S8 R0, [R4]; /* 0xc9000000001c1000 */
+	LD.CG.S8.S R0, [R4]; /* 0xc9000000005c1000 */
+	LD.E.CG.S8 R0, [R4]; /* 0xc9800000001c1000 */
+	LD.E.CG.S8.S R0, [R4]; /* 0xc9800000005c1000 */
+	LD.CG.U16 R0, [R4]; /* 0xca000000001c1000 */
+	LD.CG.U16.S R0, [R4]; /* 0xca000000005c1000 */
+	LD.E.CG.U16 R0, [R4]; /* 0xca800000001c1000 */
+	LD.E.CG.U16.S R0, [R4]; /* 0xca800000005c1000 */
+	LD.CG.S16 R0, [R4]; /* 0xcb000000001c1000 */
+	LD.CG.S16.S R0, [R4]; /* 0xcb000000005c1000 */
+	LD.E.CG.S16 R0, [R4]; /* 0xcb800000001c1000 */
+	LD.E.CG.S16.S R0, [R4]; /* 0xcb800000005c1000 */
+	LD.CG R0, [R4]; /* 0xcc000000001c1000 */
+	LD.CG.S R0, [R4]; /* 0xcc000000005c1000 */
+	LD.E.CG R0, [R4]; /* 0xcc800000001c1000 */
+	LD.E.CG.S R0, [R4]; /* 0xcc800000005c1000 */
+	LD.CG.64 R0, [R4]; /* 0xcd000000001c1000 */
+	LD.CG.64.S R0, [R4]; /* 0xcd000000005c1000 */
+
+ 
+Output of operand solver for SM35 GPU:
 
 
     .......................................................................
