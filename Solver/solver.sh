@@ -52,6 +52,6 @@ echo "It may take 10 miniutes ....................................."
 echo ".................................................................."
 time python opcode/opcode.py sm35.sass Kepler >opcode.txt
 echo "Runing modifier solvers ..................."
-python modifer/modifer.py sm35.sass Kepler >modifier.txt
+python modifier/modifier.py sm35.sass Kepler >modifier.txt
 echo "Runing operand solvers ...................."
 time python operand/operand.py opcode.sass Kepler >operand.txt
