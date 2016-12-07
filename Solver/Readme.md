@@ -28,8 +28,8 @@ The workflow is composed of four stage:
     * The output should be 
 * Operand solver
     * R: Register I: Immediate C: constant[][] M: Memory P:Predicate
-    * sample output
 
+sample output
 
 
     .......................................................................
