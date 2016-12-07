@@ -31,9 +31,10 @@ The workflow is composed of four stage:
     * sample output
 
 
+
     .......................................................................
     ......R:Register, I:Immediate, M:Memory, P:Predicate, C:constant.......
-    ......Instruction's operands are combinations of R, I, M, P, C.........
+    ......The operands of instruction are combinations of R, I, M, P, C.........
     .......................................................................
     argv[1]: disasssembly file;
     argv[2]: arch: SM21|SM35|Maxwell|Kepler|SM52 
@@ -65,4 +66,5 @@ The workflow is composed of four stage:
     Encoding is: [41]
     3 operand is P
     Encoding is: [42, 43, 44]
+
 
