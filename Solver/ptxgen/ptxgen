@@ -61,7 +61,7 @@ sub gen_ptx{
     fprint($$desc{outfile},$code);
 }
 my $ver  = $v||"4.2";
-my $arch = $a||"sm_35";
+my $arch = shift(@ARGV)||"sm_35";
 my $dir  = $d||"ptxgen/data/ptx";
 $dir.="/";
 
