@@ -46,13 +46,16 @@ def enumerate(opBits, mode, arch):
         for j in range(0, nbits):
             if (encBits >> j & 1 == 1):
                 enc64 = enc64 + (1 << opBits[j])
-
+        ff = '0x%016x' % enc64
+        tmp = dump(ff, mode, arch)
+        """
         ff = "binary"
         fout = open(ff, 'wb')
         fout.write(struct.pack('<Q', int(enc64)))
         fout.close() 
         cmd = 'nvdisasm -b SM35 binary 2>&1'
         tmp = os.popen(cmd).read()
+        """
         #print tmp
         ##enumerate
         if tmp and tmp.find("?") == -1 and tmp.find("error") == -1:
