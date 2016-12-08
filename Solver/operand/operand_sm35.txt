@@ -1,0 +1,321 @@
+.......................................................................
+......R:Register, I:Immediate, M:Memory, P:Predicate, C:constant.......
+......Instruction's operands are combinations of R, I, M, P, C.........
+.......................................................................
+ argv[1]: disasssembly file;
+ argv[2]: arch: SM21|SM35|Maxwell|Kepler|SM52 
+...........................................................
+(Line 1 of opcode/opcode_sm35.sass ) operand combination type: RRIR
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is I
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54]
+
+3 operand is R
+Encoding is: []
+
+...........................................................
+(Line 2 of opcode/opcode_sm35.sass ) operand combination type: RRI
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is I
+Encoding is: [53]
+
+...........................................................
+(Line 38 of opcode/opcode_sm35.sass ) operand combination type: I
+0 operand is I
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
+
+...........................................................
+(Line 950 of opcode/opcode_sm35.sass ) operand combination type: RRRP
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is R
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30]
+
+3 operand is P
+Encoding is: [42, 43, 44]
+
+...........................................................
+(Line 953 of opcode/opcode_sm35.sass ) operand combination type: RRC
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+3 operand is C
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+...........................................................
+(Line 955 of opcode/opcode_sm35.sass ) operand combination type: RRRC
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is R
+Encoding is: [42, 43, 44, 45, 46, 47, 48, 49]
+
+3 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+4 operand is C
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+...........................................................
+(Line 956 of opcode/opcode_sm35.sass ) operand combination type: RRCR
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+3 operand is R
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+4 operand is R
+Encoding is: [42, 43, 44, 45, 46, 47, 48, 49]
+
+...........................................................
+(Line 967 of opcode/opcode_sm35.sass ) operand combination type: PRRRI
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+2 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+3 operand is R
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30]
+
+4 operand is I
+Encoding is: [42, 43, 44, 45, 46, 47]
+
+...........................................................
+(Line 973 of opcode/opcode_sm35.sass ) operand combination type: RR
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+...........................................................
+(Line 985 of opcode/opcode_sm35.sass ) operand combination type: RII
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is I
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54]
+
+2 operand is I
+Encoding is: [14, 15, 16, 17]
+
+...........................................................
+(Line 992 of opcode/opcode_sm35.sass ) operand combination type: PPRCP
+0 operand is P
+Encoding is: [5, 6, 7]
+
+1 operand is P
+Encoding is: [2, 3, 4]
+
+2 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+3 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+4 operand is P
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+5 operand is P
+Encoding is: [42, 43, 44]
+
+...........................................................
+(Line 1176 of opcode/opcode_sm35.sass ) operand combination type: PRRRR
+0 operand is P
+Encoding is: [51, 52, 53]
+
+1 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+2 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+3 operand is R
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30]
+
+4 operand is R
+Encoding is: [42, 43, 44, 45, 46, 47, 48, 49]
+
+...........................................................
+(Line 1203 of opcode/opcode_sm35.sass ) operand combination type: PRRC
+0 operand is P
+Encoding is: [5, 6, 7]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is R
+Encoding is: [42, 43, 44, 45, 46, 47, 48, 49]
+
+3 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+4 operand is C
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+...........................................................
+(Line 1266 of opcode/opcode_sm35.sass ) operand combination type: PRRCR
+0 operand is P
+Encoding is: [51, 52, 53]
+
+1 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+2 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+3 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+4 operand is R
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+5 operand is R
+Encoding is: [42, 43, 44, 45, 46, 47, 48, 49]
+
+...........................................................
+(Line 1364 of opcode/opcode_sm35.sass ) operand combination type: PPRIP
+0 operand is P
+Encoding is: [5, 6, 7]
+
+1 operand is P
+Encoding is: [2, 3, 4]
+
+2 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+3 operand is I
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38]
+
+4 operand is P
+Encoding is: [42, 43, 44]
+
+...........................................................
+(Line 1429 of opcode/opcode_sm35.sass ) operand combination type: PRC
+0 operand is P
+Encoding is: [5, 6, 7]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+3 operand is C
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+...........................................................
+(Line 1637 of opcode/opcode_sm35.sass ) operand combination type: RRCI
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is C
+Encoding is: [37, 38, 39, 40, 41]
+
+3 operand is I
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+
+4 operand is I
+Encoding is: [42, 43, 44, 45, 46]
+
+...........................................................
+(Line 1723 of opcode/opcode_sm35.sass ) operand combination type: RPP
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is P
+Encoding is: [48, 49, 50]
+
+2 operand is P
+Encoding is: [42, 43, 44]
+
+...........................................................
+(Line 1783 of opcode/opcode_sm35.sass ) operand combination type: RI
+0 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+1 operand is I
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+...........................................................
+(Line 1880 of opcode/opcode_sm35.sass ) operand combination type: PRRII
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [2, 3, 4, 5, 6, 7, 8, 9]
+
+2 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+3 operand is I
+Encoding is: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 59]
+
+4 operand is I
+Encoding is: [42, 43, 44, 45, 46, 47]
+
+...........................................................
+(Line 2087 of opcode/opcode_sm35.sass ) operand combination type: PRIR
+0 operand is P
+Encoding is: [5, 6, 7]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is I
+Encoding is: [41]
+
+3 operand is R
+Encoding is: [42, 43, 44, 45, 46, 47, 48, 49]
+
+...........................................................
+(Line 2316 of opcode/opcode_sm35.sass ) operand combination type: PRI
+0 operand is P
+Encoding is: [5, 6, 7]
+
+1 operand is R
+Encoding is: [10, 11, 12, 13, 14, 15, 16, 17]
+
+2 operand is I
+Encoding is: [41]
+
+
+real    2m52.155s
+user    2m30.175s
+sys 0m19.929s
