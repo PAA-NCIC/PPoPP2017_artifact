@@ -15,7 +15,7 @@ def dump(newcode, mode, arch):
         fout.close()
         #nvdisasm -b  SM35 ff
         #redirect stderr to stdout
-        cmd = 'nvdisasm -b SM35 %s 2>&1' % ff
+        cmd = 'nvdisasm -b %s %s 2>&1' % (arch, ff)
         tmp = os.popen(cmd).read()
         rmfile = 'rm %s' % ff
         os.system(rmfile)
