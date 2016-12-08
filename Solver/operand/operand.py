@@ -184,10 +184,9 @@ if __name__ == "__main__":
     print " argv[2]: arch: SM21|SM35|Maxwell|Kepler|SM52 "
     with open(sys.argv[1]) as f:
         for line in f:
-            pos=Set([])
             count += 1
             list=line.split()
-            list.pop(0)
+            #list.pop(0)
             enc = list[len(list)-2]
             base=int(enc, 16)
             list.pop(len(list)-1)
