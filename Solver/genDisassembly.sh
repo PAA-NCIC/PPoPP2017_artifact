@@ -66,3 +66,5 @@ done
 ptxgen/extract.awk all.sass > all_inst.sass
 ### make instruction uniq ###
 python ptxgen/uniq.py all_inst.sass > $arch".sass"
+
+rm all.sass all_inst.sass
