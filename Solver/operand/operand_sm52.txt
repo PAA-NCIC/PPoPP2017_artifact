@@ -1,0 +1,416 @@
+.......................................................................
+......R:Register, I:Immediate, M:Memory, P:Predicate, C:constant.......
+......Instruction's operands are combinations of R, I, M, P, C.........
+.......................................................................
+ argv[1]: disasssembly file;
+ argv[2]: arch: SM21|SM35|Maxwell|Kepler|SM52 
+...........................................................
+(Line 1 of opcode/opcode_sm52.sass ) operand combination type: RRIR
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+
+3 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+...........................................................
+(Line 8 of opcode/opcode_sm52.sass ) operand combination type: RRIP
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is I
+Encoding is: [38]
+
+3 operand is P
+Encoding is: [39, 40, 41]
+
+...........................................................
+(Line 17 of opcode/opcode_sm52.sass ) operand combination type: PRRCR
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+4 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+5 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+...........................................................
+(Line 23 of opcode/opcode_sm52.sass ) operand combination type: RRII
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is I
+Encoding is: [38]
+
+3 operand is I
+Encoding is: [28]
+
+...........................................................
+(Line 42 of opcode/opcode_sm52.sass ) operand combination type: RRR
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27]
+
+...........................................................
+(Line 44 of opcode/opcode_sm52.sass ) operand combination type: RRIRI
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 56]
+
+3 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+4 operand is I
+Encoding is: [48, 49, 50, 51, 52, 53, 54, 55]
+
+...........................................................
+(Line 47 of opcode/opcode_sm52.sass ) operand combination type: RRCRI
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+3 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+4 operand is I
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+5 operand is I
+Encoding is: [48, 49, 50, 51, 52, 53, 54, 55]
+
+...........................................................
+(Line 55 of opcode/opcode_sm52.sass ) operand combination type: RRRC
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+3 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+4 operand is C
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+...........................................................
+(Line 62 of opcode/opcode_sm52.sass ) operand combination type: RRCR
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+3 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+4 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+...........................................................
+(Line 94 of opcode/opcode_sm52.sass ) operand combination type: PPRIIP
+0 operand is P
+Encoding is: [3, 4, 5]
+
+1 operand is P
+Encoding is: [0, 1, 2]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is I
+Encoding is: [38]
+
+4 operand is I
+Encoding is: [28]
+
+5 operand is P
+Encoding is: [39, 40, 41]
+
+...........................................................
+(Line 95 of opcode/opcode_sm52.sass ) operand combination type: RII
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]
+
+2 operand is I
+Encoding is: [12, 13, 14, 15]
+
+...........................................................
+(Line 183 of opcode/opcode_sm52.sass ) operand combination type: RRRRI
+0 operand is R
+Encoding is: [28, 29, 30, 31, 32, 33, 34, 35]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27]
+
+4 operand is I
+Encoding is: [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48]
+
+...........................................................
+(Line 242 of opcode/opcode_sm52.sass ) operand combination type: I
+0 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43]
+
+...........................................................
+(Line 272 of opcode/opcode_sm52.sass ) operand combination type: PPRIP
+0 operand is P
+Encoding is: [3, 4, 5]
+
+1 operand is P
+Encoding is: [0, 1, 2]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is I
+Encoding is: [38]
+
+4 operand is P
+Encoding is: [39, 40, 41]
+
+...........................................................
+(Line 354 of opcode/opcode_sm52.sass ) operand combination type: PPRRP
+0 operand is P
+Encoding is: [3, 4, 5]
+
+1 operand is P
+Encoding is: [0, 1, 2]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27]
+
+4 operand is P
+Encoding is: [39, 40, 41]
+
+...........................................................
+(Line 402 of opcode/opcode_sm52.sass ) operand combination type: PRRI
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 40, 56]
+
+...........................................................
+(Line 417 of opcode/opcode_sm52.sass ) operand combination type: PRRC
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+4 operand is C
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+...........................................................
+(Line 579 of opcode/opcode_sm52.sass ) operand combination type: IR
+0 operand is I
+Encoding is: [28, 29, 30, 31]
+
+1 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27]
+
+...........................................................
+(Line 1126 of opcode/opcode_sm52.sass ) operand combination type: PRR
+0 operand is P
+Encoding is: [44, 45, 46]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+...........................................................
+(Line 1340 of opcode/opcode_sm52.sass ) operand combination type: RI
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 41, 42, 45, 49, 56]
+
+...........................................................
+(Line 1478 of opcode/opcode_sm52.sass ) operand combination type: PRRRRI
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27]
+
+4 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+5 operand is I
+Encoding is: [28, 29, 30, 31, 32, 33, 34, 35]
+
+...........................................................
+(Line 1685 of opcode/opcode_sm52.sass ) operand combination type: PRRRR
+0 operand is P
+Encoding is: [48, 49, 50]
+
+1 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+2 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+3 operand is R
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27]
+
+4 operand is R
+Encoding is: [39, 40, 41, 42, 43, 44, 45, 46]
+
+...........................................................
+(Line 1701 of opcode/opcode_sm52.sass ) operand combination type: PPPPP
+0 operand is P
+Encoding is: [3, 4, 5]
+
+1 operand is P
+Encoding is: [0, 1, 2]
+
+2 operand is P
+Encoding is: [12, 13, 14]
+
+3 operand is P
+Encoding is: [29, 30, 31]
+
+4 operand is P
+Encoding is: [39, 40, 41]
+
+...........................................................
+(Line 3201 of opcode/opcode_sm52.sass ) operand combination type: RPPP
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is P
+Encoding is: [12, 13, 14]
+
+2 operand is P
+Encoding is: [29, 30, 31]
+
+3 operand is P
+Encoding is: [39, 40, 41]
+
+...........................................................
+(Line 3216 of opcode/opcode_sm52.sass ) operand combination type: PRI
+0 operand is P
+Encoding is: [3, 4, 5]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is I
+Encoding is: [38]
+
+...........................................................
+(Line 3232 of opcode/opcode_sm52.sass ) operand combination type: PRC
+0 operand is P
+Encoding is: [3, 4, 5]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+3 operand is C
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+...........................................................
+(Line 4536 of opcode/opcode_sm52.sass ) operand combination type: RRCI
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is R
+Encoding is: [8, 9, 10, 11, 12, 13, 14, 15]
+
+2 operand is C
+Encoding is: [34, 35, 36, 37, 38]
+
+3 operand is I
+Encoding is: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+
+4 operand is I
+Encoding is: [39, 40, 41, 42, 43]
+
+...........................................................
+(Line 5064 of opcode/opcode_sm52.sass ) operand combination type: RPP
+0 operand is R
+Encoding is: [0, 1, 2, 3, 4, 5, 6, 7]
+
+1 operand is P
+Encoding is: [45, 46, 47]
+
+2 operand is P
+Encoding is: [39, 40, 41]
+
