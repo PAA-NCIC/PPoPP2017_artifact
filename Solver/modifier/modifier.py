@@ -7,7 +7,7 @@ import os
 def check_mode(arch):
     if (arch == "SM21" or arch=="Fermi" or arch == "SM35" or arch=="Kepler"):
         return 1
-    elif (arch == "SM52" or arch == "Mawell"):
+    elif (arch == "SM52" or arch == "Maxwell"):
         return 2
     else:
         return 0
