@@ -7,7 +7,7 @@ import os
 def check_mode(arch):
     if (arch == "SM21" or arch=="Fermi" or arch == "SM35" or arch=="Kepler"):
         return 1
-    elif (arch == "SM52" or arch == "Mawell"):
+    elif (arch == "SM52" or arch == "Maxwell"):
         return 2
     else:
         return 0
@@ -124,7 +124,9 @@ if __name__ == "__main__":
                     #### parse the new generated disassembly ##
                     my=Inst(inst)
                     ### if opcode is changed, then this bit represent opcode, we find it!!! ###
-                    if my.op != origin.op and len(inst) > 3:
+                    ## LDG and TEX are the same instructions in fact 
+                    ## RED and ATOM are the same instruction
+                    if my.op != origin.op and len(inst) > 3 and not (my.op == "LDG" and origin.op == "TEX") and not (my.op == "TEX" and origin.op=="LDG") and not (my.op == "RED" and origin.op == "ATOM") and not (my.op == "ATOM" and origin.op == "RED"):
                         print "opcode changes: ", origin.op,"=>", my.op, "when bit [", i, "]is flipped"
                         pos.add(i)
     print ""
