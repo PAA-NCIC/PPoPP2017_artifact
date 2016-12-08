@@ -47,6 +47,7 @@ def enumerate(opBits, mode, arch):
             if (encBits >> j & 1 == 1):
                 enc64 = enc64 + (1 << opBits[j])
         ff = '0x%016x' % enc64
+        ####### dump the code ####
         tmp = dump(ff, mode, arch)
         """
         ff = "binary"
@@ -72,12 +73,10 @@ def enumerate(opBits, mode, arch):
 if __name__ == "__main__":
     arch = sys.argv[1]
     if arch == "SM35" :
-        #opBits=[63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 1, 0]
-        opBits=[63, 62]
+        opBits=[63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 1, 0]
         mode = 1
     elif arch == "SM52":
         opBits=[63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51]
-        opBits=[63, 62]
         mode = 2
     else:
         print "Error: you need to run opcode.py to generate opBits first..."
