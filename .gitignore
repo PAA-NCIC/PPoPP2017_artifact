@@ -1,2 +1,4 @@
-ptxgen/data_sm_52/
-ptxgen/data_sm_35/
+Solver/ptxgen/data_sm_52/*
+Solver/ptxgen/data_sm_35/*
+Solver/ptxgen/data_sm35/
+Solver/opcode/binary
