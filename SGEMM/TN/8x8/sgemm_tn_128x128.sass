@@ -75,8 +75,6 @@
     104-107 : trackA<0-1>, trackB<0-1>
 
     108-121 ~ writeS, lda8, k, tidY, txa, txb, ta, tb, loop
-    #108-116 ~ writeS, lda8, k, tidY, txa, txb, ta, tb, loop
-    #122-125 ~ readAs, readBs, tid, seed
     125     ~ readAs
     124     ~ readBs
     123     ~ tid
@@ -94,7 +92,6 @@
 -:-:-:-:00 S2R blkB, SR_CTAID.Z;
 -:-:-:-:00 S2R blkZ, SR_CTAID.X;
 
-//<SCHEDULE_BLOCK>
 -:-:-:-:00 MOV k, param_k;
 -:-:-:-:00 MOV loop, RZ;
 -:-:-:-:00 STS.128 [RZ + addr_zero], RZ;
@@ -102,8 +99,6 @@
 join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ * 4), 0..15);
 </CODE>
 
-// tidX = (tid & 31) << 2
-// tidY = (tid >> 5) & 7
 -:-:-:-:00 LOP.AND tid31, tid, 31;
 -:-:-:-:00 SHL tidX, tid31, 2;
 -:-:-:-:00 BFE.U32 tidY, tid, 0x305; // 3 bits at position 5
@@ -115,34 +110,19 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 -:-:-:-:00 MOV ldaz, param_ldaz;
 -:-:-:-:00 MOV ldbz, param_ldbz;
 
-// trackA += (blkA*128 + lda*tidY + tidX) * 2
-//txa = blkA*128 + tidX
 -:-:-:-:00 ISCADD txa, blkA, tidX, 7;
-//ta = lda*tidY + txa
-//-:-:-:-:00 XMAD.LO2 ta, lda, tidY, txa;
-// ta = ldaz*blkz + ta
-//-:-:-:-:00 XMAD.LO2 ta, ldaz, blkZ, ta;
 -:-:-:-:00 IMAD ta, lda, tidY, txa;
 -:-:-:-:00 IMAD ta, ldaz, blkZ, ta;
-//-:-:-:-:00 LEA trackA0.CC, ta, param_A[0], 0x2;
-//-:-:-:-:00 LEA.HI.X trackA1, ta, param_A[1], RZ, 0x2;
 
 -:-:-:-:00 MOV param_A_base_lo, param_A[0];
 -:-:-:-:00 MOV param_A_base_hi, param_A[1];
-//ta_shl = ta << 2 =ta*4
 -:-:-:-:00 SHL ta_shl, ta, 2;
-//trackA0 = ta_shl + param_A[0]
 -:-:-:-:00 IADD trackA0.CC, ta_shl, param_A_base_lo;
 -:-:-:-:00 IADD.X trackA1, RZ, param_A_base_hi;
 
 -:-:-:-:00 ISETP.LT.AND P5, PT, txa, param_m, PT;
 
-// trackB += (blkB*128 + ldb*tidY + tidX) * 2
 -:-:-:-:00 ISCADD txb, blkB, tidX, 7;
-//-:-:-:-:00 XMAD.LO2 tb, ldb, tidY, txb;
-//-:-:-:-:00 XMAD.LO2 tb, ldbz, blkZ, tb;
-//-:-:-:-:00 LEA trackB0.CC, tb, param_B[0], 0x2;
-//-:-:-:-:00 LEA.HI.X trackB1, tb, param_B[1], RZ, 0x2;
 -:-:-:-:00 IMAD tb, ldb, tidY, txb;
 -:-:-:-:00 IMAD tb, ldbz, blkZ, tb;
 
@@ -154,12 +134,10 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 
 -:-:-:-:00 ISETP.LT.AND P6, PT, txb, param_n, PT;
 
-// writeS = (128*tidY + tidX) * 4
 -:-:-:-:00 ISCADD writeS, tidY, tidX, 7;
 -:-:-:-:00 SHL writeS, writeS, 2;
 -:-:-:-:00 LOP.XOR writeS, writeS, 4x<128*8*2>;
 
-// readAs  = (((tid & 0x70) >> 3) | (tid & 1)) << 4
 -:-:-:-:00 LOP.AND tid1, tid, 1;
 -:-:-:-:00 LOP.AND readAs, tid, 0x70;
 -:-:-:-:00 SHR.U32 readAs, readAs, 3;
@@ -167,51 +145,36 @@ join('', map sprintf("-:-:-:-:00 LDS.U.128 czero%02d, [RZ + addr_zero];\n", $_ *
 -:-:-:-:00 SHL readAs, readAs, 4;
 
 
-// readBs = ((tid128 >> 4) | ((tid >> 1) & 7)) << 4 + 4096;
 -:-:-:-:00 LOP.AND tid128, tid, 128;
 -:-:-:-:00 BFE.U32 tid7, tid, 0x301; // 3 bits at position 1
 -:-:-:-:00 SHR.U32 readBs, tid128, 4;
 -:-:-:-:00 LOP.OR readBs, readBs, tid7;
 -:-:-:-:00 ISCADD readBs, readBs, 4x<128*8>, 4;
 
-// Grab a seed for this thread
-// (blkB*gridDimA*256 + blkA*256 + tid) & (1024*256 - 1)
 -:-:-:-:00 MOV flag, param_flags;
-//-:-:-:-:00 LOP.AND.NZ P1, RZ, flag, 0x1;
-//set P6 as false
-//-:-:-:-:00 ISETP.LT.AND P1, PT, RZ, RZ, !PT;
 -:-:-:-:00 MOV dimA, gridDimA;
 -:-:-:-:00 ISCADD tbid, blkA, tid, 8;
-//-:-:-:-:00 XMAD.U16.U16 dimA, blkB, dimA, RZ;
 -:-:-:-:00 IMAD dimA, blkB, dimA, RZ;
 -:-:-:-:00 ISCADD tbid, dimA, tbid, 8;
 -:-:-:-:00 LOP.AND seed, tbid, 1x<2048*32 - 1>;
-//-:-:-:-:00 LEA Rand0.CC, seed, param_Rand[0], 2;
-//-:-:-:-:00 LEA.HI.X Rand1, seed, param_Rand[1], RZ, 2;
 -:-:-:-:00 MOV param_A_base_lo, param_Rand[0];
 -:-:-:-:00 MOV param_A_base_hi, param_Rand[1];
 -:-:-:-:00 SHL ta_shl, seed, 2;
 -:-:-:-:00 IADD Rand0.CC, ta_shl, param_A_base_lo;
 -:-:-:-:00 IADD.X Rand1, RZ, param_A_base_hi;
 
-//-:-:-:-:00 @P1 LD.E.CS seed, [Rand];
-//</SCHEDULE_BLOCK>
 
 REMAINDER:
 
-//<SCHEDULE_BLOCK>
 
 <CODE>
     our $vec;
     $vec = 1;
     return $vec ? q{
-// bDoRemainder = k & 7 && k > 8
-//-:-:-:-:00 LOP.AND.NZ P4, RZ, k, 7;
 -:-:-:-:00 LOP.AND k_and, k, 7;
 -:-:-:-:00 ISETP.EQ.AND P4, PT, k_and, RZ, PT; 
 -:-:-:-:00 ISETP.GT.AND P1, PT, k, 8, !P4;
 
-// doLoad = tidY < k && txa|txb < n|m
 -:-:-:-:00 ISETP.LT.AND P2, PT, tidY, k, P5;
 -:-:-:-:00 ISETP.LT.AND P3, PT, tidY, k, P6;
 
@@ -221,11 +184,8 @@ REMAINDER:
 T:-:D:S:00 @!P2 LDS.U.128 loadA, [RZ + addr_zero];
 T:-:D:S:00 @!P3 LDS.U.128 loadB, [RZ + addr_zero];
 T:-:D:S:00 TEXDEPBAR 0x0;
-    // Vec 4 and scalar loads
     } : q{
 
-// doLoadA = tidY < k && txa < m
-// doLoadB = tidY < k && txb < n
 -:-:-:-:00 IADD x1, txa, 1;
 -:-:-:-:00 IADD x2, txa, 2;
 -:-:-:-:00 IADD x3, txa, 3;
@@ -266,7 +226,6 @@ T:-:D:S:00 TEXDEPBAR 0x0;
     };
 </CODE>
 
-//</SCHEDULE_BLOCK>
 
 -:-:-:-:00 STS.128 [writeS + 4x<0*128>], loadA0;
 
@@ -289,7 +248,6 @@ T:-:D:S:00 TEXDEPBAR 0x0;
     our $vec;
     $vec = 1;
     my $k_end = $vec ? 16 : 24;
-#our @top = ("-:-:-:-:00 ISETP.GE.AND P2, PT, k, $k_end, P5;\n");
 our @top = ("");
     our %insert =
     (
@@ -330,7 +288,6 @@ j6c61 => "-:-:-:-:00 \@P0 LOP.XOR readAs, readAs, 4x<128*8*2>;\n" ,
 j6c62 => "-:-:-:-:00 \@P0 LOP.XOR readBs, readBs, 4x<128*8*2>;\n" ,
 j7c62 => "-:-:-:-:00 \@P0 LOP.XOR writeS, writeS, 4x<128*8*2>;\n" ,
 j5c29  => "-:-:-:-:00 IADD32I k, k, -8;\n",
-#j5c63  => "-:-:-:-:00 TEXDEPBAR 0x0; \n",
 j5c63  => "T:-:D:S:00 TEXDEPBAR 0x0; \n",
 
 j7c63 => "-:-:D:-:00 \@P0 BRA.U LOOP;\n" .

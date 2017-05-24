@@ -34,8 +34,6 @@
   param_m     : c[0x0][0x16c]
   param_n     : c[0x0][0x170]
   param_k     : c[0x0][0x174]
-  #debug[0]    : c[0x0][0x178]
-  #debug[1]    : c[0x0][0x17c]
 </CONSTANT_MAPPING>
 
 <REGISTER_MAPPING>
@@ -44,7 +42,6 @@
 
   0-63 : czero<00-63>
 
-  // avoid ffma single instruction bank conflict
 
    1,  4, 17, 20, 33, 36, 49, 52 : cx<0-7>y0
    5,  0, 21, 16, 37, 32, 53, 48 : cx<0-7>y1
@@ -69,7 +66,6 @@
   104-107 : trackA<0-1>, trackB<0-1>
 
   108-112 ~ writeAs, writeBs, k, k_and, tidAY
-  // to avoid lds bank conflict with ffma 
   117 ~ readAs
   116 ~ readBs
   115 ~ tid
@@ -81,7 +77,6 @@
 
 </REGISTER_MAPPING>
 
-//special to register
 -:-:-:-:00 S2R tid,  SR_TID.X;
 -:-:-:-:00 S2R blkA, SR_CTAID.Y;
 -:-:-:-:00 S2R blkB, SR_CTAID.Z;
@@ -93,28 +88,17 @@
 -:-:-:-:00 MOV ldcz, RZ;
 -:-:-:-:00 MOV lda, param_lda8;
 -:-:-:-:00 MOV ldb, param_ldb;
-//ldb=M
-//lda=lda/32  when A is T
 -:-:-:-:00 SHR.U32 lda, lda, 5;
 -:-:-:-:00 STS.128 [RZ + addr_zero], RZ;
 <CODE>
   join('', map sprintf("-:-:-:-:00 LDS.128 czero%02d, [RZ + addr_zero];\n", $_ * 4), 0..15);
 </CODE>
 
-//zxx: needs threads 256=2^8, 7~0
-// tidAX = (tid & 31) << 2
-// tidAY = (tid >> 5) & 7
-//zxx: tidAX=z,z,z,4,3,2,1,0,z,z
-//-----------------trackA------------------
-//tid31= 4,3,2,1,0
 -:-:-:-:00     LOP.AND tid31,  tid,  31; 
-//tidAx= 4,3,2,1,0,z,z
 -:-:-:-:00     SHL tidAX,   tid31, 2;
-//tidAY=z,z,z,z,7,6,5
 -:-:-:-:00      BFE.U32 tidAY,   tid,  0x305; // 3 bits at position 5
 
 
-// trackA += (blkA*128 + lda*tidY + tidX) * 2
 -:-:-:-:00 ISCADD txa, blkA, tidAX, 7;
 -:-:-:-:00 IMAD ta, lda, tidAY, txa;
 -:-:-:-:00 IMAD ta, ldaz, blkZ, ta;
@@ -126,18 +110,10 @@
 
 -:-:-:-:00 ISETP.LT.AND P5, PT, txa, param_m, PT;
 
-//-------------------------------trackBY----------------
-// tidBY  = tid1 << 2
-//tidBY= 0, z,z
 -:-:-:-:00 LOP.AND tid1,  tid,  1;
 -:-:-:-:00 SHL tidBY, tid1, 2;
-// tidBX = tid >> 1
-//tidBX: 7,5,4,3,2,1
 -:-:-:-:00 SHR.U32 tidBX, tid, 1;
-//txb = blkB*128 + tidBX
 -:-:-:-:00 ISCADD txb, blkB, tidBX, 7;
-//tb=ldb*tidBY + txb = ldb*<> + tidBY
-//trackB += ((blkB*128 + tidX) * ldb + tidBY) * 4
 -:-:-:-:00 IMAD tb, ldb, txb, tidBY;
 -:-:-:-:00 IMAD tb, ldbz, blkZ, tb;
 -:-:-:-:00 MOV tmp_param0, param_B[0];
@@ -146,64 +122,35 @@
 -:-:-:-:00 IADD trackB0.CC, tmp_shl, tmp_param0;
 -:-:-:-:00 IADD.X trackB1, RZ, tmp_param1;
 
-// TODO blkB * 128 + tidBX < param_n
 -:-:-:-:00 ISETP.LT.AND P6, PT, txb, param_n, PT;
 
-//------------------writeAs -----------------
-//writeAs = tidAY*128 + tidAX
 -:-:-:-:00 ISCADD  writeAs, tidAY, tidAX, 7;
-//-:-:-:-:00 SHL     writeAs, writeAs, 2;
-//-:-:-:-:00 LOP.XOR writeAs, writeAs, 4x<128*8*2>;
 -:-:-:-:00  ISCADD  writeAs, writeAs, 4x<128*8*2>, 2;
 
-//writeBs
-//writeBs = tidBY*128 + tidBX
 -:-:-:-:00 ISCADD writeBs, tidBY, tidBX, 7;
 -:-:-:-:00 ISCADD writeBs, writeBs, 4x<128*8*3>, 2;
-//-:-:-:-:00 SHL    writeBs, writeBs, 2;
-//-:-:-:-:00 LOP.XOR writeBs, writeBs, 4x<128*8*2>;
 
-//-------------------------readAs---------------------
-// readAs  = (((tid & 0x70) >> 3) | (tid & 1)) << 4
-////tid1=z,z,z,z,0
-//6,5,4,z,z,z,z
 -:-:-:-:00 LOP.AND readAs, tid,    0x70;
-//6,5,4,z
 -:-:-:-:00 SHR.U32 readAs, readAs, 3;
-//6,5,4,0
 -:-:-:-:00 LOP.OR  readAs, readAs, tid1;
-//6,5,4,0, z,z,z,z
 -:-:-:-:00 SHL     readAs, readAs, 4;
 
-//--------------------------readBs--------------------
-// readBs = ((tid128 >> 4) | ((tid >> 1) & 7)) << 4 + 4096;
-//7,z,z,z,z,z,z,z
 -:-:-:-:00 LOP.AND tid128, tid,    128;
-//z,z,z,3,2,1
 -:-:-:-:00 BFE.U32 tid7,   tid,    0x301; // 3 bits at position 1
-//7,z,z,z
 -:-:-:-:00 SHR.U32 readBs, tid128, 4;
-//z,z,z,z,7,3,2,1
 -:-:-:-:00 LOP.OR  readBs, readBs, tid7;
-// readBs << 4
 -:-:-:-:00 ISCADD  readBs, readBs, 4x<128*8>, 4;
 
   REMAINDER:
 
 <CODE>
     return q{
-    // load if tidAY < k (tidAY == 0 if mod 4 not mod 8)
-    // doLoad = tidY < k && txa|txb < n|m
-    //zxx: P2= tidY < k && P5
-    //txa = 127*blk + tidx
-    //zxx: P5 = txa < param_m
       -:-:-:-:00 ISETP.LT.AND P2, PT, tidAY, k, P5; 
       -:-:-:-:00 ISETP.LT.AND P3, PT, tidBX, k, P5; 
       -:-:-:-:00 @P5 LD.E.128 loadA0, [trackA];
       -:-:-:-:00 @P6 LD.E.128 loadB0, [trackB];
 
 
-      // bDoRemainder = k & 7 && k > 8
       -:-:-:-:00 LOP.AND k_and, k, 7;
       -:-:-:-:00 ISETP.EQ.AND P1, PT, k_and, RZ, PT;
       -:-:-:-:00 ISETP.GT.AND P1, PT, k, 8, !P1;
@@ -225,7 +172,6 @@
     };
 </CODE>
 
-//double buffer
 -:-:-:-:00 LOP.XOR readAs, readAs, 4x<128*8*2>;
 -:-:-:-:00 LOP.XOR readBs, readBs, 4x<128*8*2>;
 -:-:-:-:00 BAR.SYNC 0;
@@ -237,14 +183,11 @@
 -:-:-:-:00 NOP;
 -:-:-:-:00 NOP;
 -:-:-:-:00 NOP;
-// instruction align
 
 <CODE>
     my $k_end = 16;
     our %insert =
     (
-        # P0 must be the topest
-        #k< k_end
         j0c47 => "-:-:-:-:00 ISETP.GE.AND P2, PT, k, $k_end, P5;\n",
         j0c53 => "-:-:-:-:00 ISETP.GE.AND P3, PT, k, $k_end, P6;\n",
         j0c62 => "-:G:D:-:00 \@P2 LDG.E.CI.128 loadA0, [trackA];\n",
@@ -266,7 +209,6 @@
         j5c63 => "-:G:-:-:15 \@P0 STS [writeBs + 4x<2*128>], loadB2;\n",
         j6c53 => "-:G:-:-:15 \@P0 STS [writeBs + 4x<3*128>], loadB3;\n",
 
-        #j6c47 => "T:-:D:S:00 TEXDEPBAR 0x0;\n",
 
         j6c61 => "-:-:-:-:00 \@P0 LOP.XOR readBs, readBs, 4x<128*8*2>;\n",
         j6c62 => "-:-:-:-:00 \@P0 LOP.XOR readAs, readAs, 4x<128*8*2>;\n",

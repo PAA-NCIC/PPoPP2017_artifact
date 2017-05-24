@@ -117,7 +117,6 @@ LOOP:
               $ins = "-:-:D:-:07 NOP;\n";
             }
 
-            # 04 and 05 are dual issued
             if($ins) {
               $ctrl = "-:-:D:-:04";
             } else {
@@ -147,29 +146,23 @@ LOOP:
 -:-:-:-:00 LOP.AND tid_96,  tid, 96;
 -:-:-:-:00 LOP.AND tid_128, tid, 128;
 
-// writeCs = readAs * 32 + readBs;
 -:-:-:-:00 LOP.AND readAs, readAs, 0xfff;
 -:-:-:-:00 LOP.AND readBs, readBs, 0xfff;
 -:-:-:-:00 ISCADD  writeCs, readAs, readBs, 5;
 
-// cx = tid_31 | (tid_128 >> 2);
 -:-:-:-:00 SHR.U32 cx00, tid_128, 2;
 -:-:-:-:00 LOP.OR  cx00, tid_31, cx00;
 
-// readCs = ((tid_96 << 4) | cx) << 2;
 -:-:-:-:00 SHL    readCs, tid_96,  4;
 -:-:-:-:00 LOP.OR readCs, readCs, cx00;
 -:-:-:-:00 SHL    readCs, readCs, 2;
 
-// cx += blockB*128;
 -:-:-:-:00 ISCADD cx00, blockB, cx00, 7;
 -:-:-:-:00 IADD   cx64, cx00, 64;
 
-// cy = blockA*128 + (tid_96 >> 1)
 -:-:-:-:00 SHR.U32 cy00, tid_96, 1;
 -:-:-:-:00 ISCADD  cy00, blockA, cy00, 7;
 
-// C += (ldcz*blockZ + ldc*cy + cx00) * 4;
 -:-:-:-:00 MOV  ldcz, RZ;
 -:-:-:-:00 MOV  ldc, param_ldc;
 -:-:-:-:00 IMAD ci, ldc, cy00, cx00;
@@ -180,9 +173,6 @@ LOOP:
 -:-:-:-:00 IADD C00y0.CC, tmp_shl, tmp_param0;
 -:-:-:-:00 IADD.X C00y1, RZ, tmp_param1;
 
-// ldc1 = ldc (byte)
-// ldc4 = 4ldc (byte)
-// 1dc60 = 60ldc (byte)
 -:-:-:-:00 SHL    ldc1, ldc, 2;
 -:-:-:-:00 SHL    ldc4, ldc, 4;
 -:-:-:-:00 ISCADD ldc60, ldc, -ldc4, 8;
@@ -190,10 +180,8 @@ LOOP:
 -:-:-:-:00 MOV alpha, param_alpha;
 -:-:-:-:00 MOV beta,  param_beta;
 
-// Apply beta
 -:-:-:-:00 ISETP.NE.AND P6, PT, beta, RZ, PT;
 
-// interleave for high throughput
 -:-:-:-:00 IADD   C04y0.CC, C00y0, ldc4;
 -:-:-:-:00 IADD   cy04, cy00,  4;
 -:-:-:-:00 IADD.X C04y1,    C00y1, RZ;
@@ -274,7 +262,6 @@ STORE_C:
 -:-:-:-:00 IADD cy00, cy00, 1;
 -:-:-:-:00 IADD cy04, cy04, 1;
 
-// beta != 0
 -:-:-:-:00 ISETP.NE.AND P6, PT, beta, RZ, PT;
 
 -:-:-:-:00 STS.128 [writeCs+4x<00>], c0;

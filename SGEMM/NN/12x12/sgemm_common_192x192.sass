@@ -44,7 +44,6 @@ LOOP:
     my @cOrder;
     my @swirl = ([0,2],[1,2],[1,0],[0,0]);
     my @y = (0,1,4,5);
-#xsb:
     push  @cOrder, [0,0];
     push  @cOrder, [0,1];
     push  @cOrder, [1,1];
@@ -247,17 +246,12 @@ LOOP:
             }
 
             $out .= sprintf "%s      FFMA cx%dy%d, j%dBx%d, j%dAy%d, cx%dy%d;\n%s", $ctrl,  $x,$y,  $odd,$x,  $odd,$y,  $x,$y,  $ins;
-            #print $out;
-            #print "\n";
         }
     }
     return $out;
 
 </CODE>
-//----------------------------------------------------------
-//-:-:-:-:00 I2F.F32.S32 cx0y0, tid;
 
-//----------------------------------------------------------
 -:-:-:-:00 S2R blockA, SR_CTAID.Y;
 -:-:-:-:00 S2R blockB, SR_CTAID.Z;
 -:-:-:-:00 S2R blockZ, SR_CTAID.X;
@@ -265,50 +259,25 @@ LOOP:
 -:-:-:-:00 MOV alpha, param_alpha;
 -:-:-:-:00 MOV beta, param_beta;
 -:-:-:-:00 MOV flags, param_flags;
-//----------------------------------------------------------
-//bit 0~4
 -:-:-:-:00 LOP.AND tid_31, tid, 31;
-//bit 5~6
 -:-:-:-:00 LOP.AND tid_96, tid, 96;
-//bit 7
 -:-:-:-:00 LOP.AND tid_128, tid, 128;
-//----------------------------------------------------------
-//##### for writeCs
-// writeCs = (readAs / 2) * 256 + readBs*2;
-//readAs=6,5,4,0,z,z,z,z
-//because readAs may add some "size" to swap buffer, LOP.AND is used to cut off it
 -:-:-:-:00 LOP.AND readAs, readAs, 0xfff;
-//readBs=<7,3,2,1,z,z,z>
 -:-:-:-:00 LOP.AND readBs, readBs, 0xfff;
-//readBs=<7,3,2,1,z,z,z,z>
 -:-:-:-:00 SHL readBs, readBs, 1;
-//readAs=6,5,4,0,z,z,z,z
 -:-:-:-:00 ISCADD writeCs, readAs, readBs, 6;
-//----------------------------------------------------------
-//##### for readCs
-// cx = tid_31 | (tid_128 >> 2);
-//tid_128=7,z,z,z,z,z,z,z
-//tid_31 = 4,3,2,1,0
-//cx00=7,4,3,2,1,0
 -:-:-:-:00 SHR.U32 cx00, tid_128, 2;
 -:-:-:-:00 LOP.OR cx00, tid_31, cx00;
 
-// readCs = ((tid_96 << 5) | cx) << 2;
-//readCs= 6,5,z,z,z,z,7,4,3,2,1,0
 -:-:-:-:00 SHL readCs, tid_96, 5;
 -:-:-:-:00 LOP.OR readCs, readCs, cx00;
 -:-:-:-:00 SHL readCs, readCs, 2;
-//----------------------------------------------------------
-//##### for trackC (C00y0)
-// cx = tid_31 | (tid_128 >> 2);
-// cx += blockB*192 = (blockB*128 + blockB*64);
 -:-:-:-:00 ISCADD cx00, blockB, cx00, 6;
 -:-:-:-:00 ISCADD cx00, blockB, cx00, 7;
 
 -:-:-:-:00 IADD cx64, cx00, 64;
 -:-:-:-:00 IADD cx128, cx00, 128;
 
-// cy = blockA*192 + (bit5~6)<<4 = (blockA*128 + blockA*64) + (tid_96>>1)
 -:-:-:-:00 SHR.U32 cy00, tid_96, 1;
 -:-:-:-:00 ISCADD cy00, blockA, cy00, 7;
 -:-:-:-:00 ISCADD cy00, blockA, cy00, 6;
@@ -316,38 +285,26 @@ LOOP:
 -:-:-:-:00 MOV ldc, param_ldc;
 -:-:-:-:00 IMAD ci, ldc, cy00, cx00;
 
-// ci = ldc*cy00 + cx00
-// trackC = C + (ci << 2)
 -:-:-:-:00 MOV param_A_base_lo, param_C[0];
 -:-:-:-:00 MOV param_A_base_hi, param_C[1];
 -:-:-:-:00 SHL ta_shl, ci, 2;
 -:-:-:-:00 IADD C00y0.CC, ta_shl, param_A_base_lo;
 -:-:-:-:00 IADD.X C00y1, RZ, param_A_base_hi;
-//----------------------------------------------------------
-// ldc1 ldc4 ldc60
-//ldc:in words, ldc1:in bytes, ldc4:4 row in bytes
 -:-:-:-:00 SHL ldc1, ldc, 2;
 -:-:-:-:00 SHL ldc4, ldc, 4;
 -:-:-:-:00 ISCADD ldc60, ldc, -ldc4, 8;
-//----------------------------------------------------------
-// ###for trackC04 trackC08 trackC12, dest for four rows in share memory
-// C04y0 = trackC + (ldc*4)
 -:-:-:-:00 IADD C04y0.CC, C00y0, ldc4;
 -:-:-:-:00 IADD.X C04y1, C00y1, RZ; 
 
-// C08y0 = trackC + (ldc*8)
 -:-:-:-:00 IADD C08y0.CC, C04y0, ldc4;
 -:-:-:-:00 IADD.X C08y1, C04y1, RZ; 
 
-// C012y0 = trackC + (ldc*12)
 -:-:-:-:00 IADD C12y0.CC, C08y0, ldc4;
 -:-:-:-:00 IADD.X C12y1, C08y1, RZ; 
-//----------------------------------------------------------
 
 -:-:-:-:00 IADD cy04, cy00, 4;
 -:-:-:-:00 IADD cy08, cy00, 8;
 -:-:-:-:00 IADD cy12, cy00, 12; 
-//----------------------------------------------------------
 
 <CODE>
 
@@ -369,7 +326,6 @@ LOOP:
 "-:-:-:-:00 IADD.X C12y1, C12y1, RZ;\n\n" if ($y == 4 || $y == 8);
 
         $out .= sprintf(
-### put a row(4 words x 3) into c0~c11
 "-:-:-:-:00 FMUL c0,  cx0y%d,  alpha;\n" .
 "-:-:-:-:00 FMUL c1,  cx1y%d,  alpha;\n" .
 "-:-:-:-:00 FMUL c2,  cx2y%d,  alpha;\n" .
@@ -393,30 +349,13 @@ $out .= "-:-:-:-:00 CAL STORE_C;\n\n";
 -:-:-:-:00 EXIT;
 
 STORE_C:
-//----------------------------------------------------------
-//store a row into share memory
-//-:-:-:-:00 MOV c0, alpha;
-//-:-:-:-:00 I2F.F32.S32 c0, tid;
-//-:-:-:-:00 I2F.F32.S32 c1, tid;
-//-:-:-:-:00 I2F.F32.S32 c2, tid;
-//-:-:-:-:00 I2F.F32.S32 c3, tid;
 
-//-:-:-:-:00 I2F.F32.S32 c4, tid;
-//-:-:-:-:00 I2F.F32.S32 c5, tid;
-//-:-:-:-:00 I2F.F32.S32 c6, tid;
-//-:-:-:-:00 I2F.F32.S32 c7, tid;
 
-//-:-:-:-:00 I2F.F32.S32 c8, tid;
-//-:-:-:-:00 I2F.F32.S32 c9, tid;
-//-:-:-:-:00 I2F.F32.S32 c10, tid;
-//-:-:-:-:00 I2F.F32.S32 c11, tid;
 T:-:D:S:00 \@P0 TEXDEPBAR 0x0;
 -:-:-:-:00 STS.128 [writeCs+4x<00>], c0;
 -:-:-:-:00 STS.128 [writeCs+4x<64>], c4;
 -:-:-:-:00 STS.128 [writeCs+4x<128>], c8;
 -:-:D:S:00 BAR.SYNC 0;
-//----------------------------------------------------------
-//load C from share memory, four rows
 -:-:-:-:00 LDS c0, [readCs + 4x<0*256 + 00>];
 -:-:-:-:00 LDS c1, [readCs + 4x<0*256 + 64>];
 -:-:-:-:00 LDS c2, [readCs + 4x<0*256 + 128>];
@@ -432,54 +371,21 @@ T:-:D:S:00 \@P0 TEXDEPBAR 0x0;
 -:-:-:-:00 LDS c9,  [readCs + 4x<3*256 + 00>];
 -:-:-:-:00 LDS c10, [readCs + 4x<3*256 + 64>];
 -:-:-:-:00 LDS c11, [readCs + 4x<3*256 + 128>];
-//----------------------------------------------------------
-//-:-:-:-:00 I2F.F32.S32 c0, tid;
-//-:-:-:-:00 I2F.F32.S32 c1, tid;
-//-:-:-:-:00 I2F.F32.S32 c2, tid;
 
-//-:-:-:-:00 I2F.F32.S32 c3, tid;
-//-:-:-:-:00 I2F.F32.S32 c4, tid;
-//-:-:-:-:00 I2F.F32.S32 c5, tid;
 
-//-:-:-:-:00 I2F.F32.S32 c6, tid;
-//-:-:-:-:00 I2F.F32.S32 c7, tid;
-//-:-:-:-:00 I2F.F32.S32 c8, tid;
 
-//-:-:-:-:00 I2F.F32.S32 c9, tid;
-//-:-:-:-:00 I2F.F32.S32 c10, tid;
-//-:-:-:-:00 I2F.F32.S32 c11, tid;
-//-:-:-:-:00 MOV c0, 90.0;
 
-//cx00 < n && P6 = (txb < n)
 -:-:-:-:00 ISETP.LT.AND P4, PT, cx00, param_n, PT; 
-//cx64 < n
 -:-:-:-:00 ISETP.LT.AND P5, PT, cx64, param_n, PT; 
-//cy00 < m  && cx00 < n 
 -:-:-:-:00 ISETP.LT.AND P0, PT, cy00, param_m, P4; 
-// cy00 < m && cx64 < n
 -:-:-:-:00 ISETP.LT.AND P1, PT, cy00, param_m, P5; 
-// cy04 < m && cx00 < m
 -:-:-:-:00 ISETP.LT.AND P2, PT, cy04, param_m, P4; 
-// cy04 < m && cx64 < m
 -:-:-:-:00 ISETP.LT.AND P3, PT, cy04, param_m, P5; 
-//cy00  
 
 
-//-:-:-:-:00 ST.E.CG [C00y0 + 4x<00>],  c0;
-//-:-:-:-:00 ST.E.CG [C00y0 + 4x<64>],  c1;
-//-:-:-:-:00 ST.E.CG [C00y0 + 4x<128>], c2;
 
-//-:-:-:-:00 ST.E.CG [C04y0 + 4x<00>],  c3;
-//-:-:-:-:00 ST.E.CG [C04y0 + 4x<64>],  c4;
-//-:-:-:-:00 ST.E.CG [C04y0 + 4x<128>], c5;
 
-//-:-:-:-:00 ST.E.CG [C08y0 + 4x<00>],  c6;
-//-:-:-:-:00 ST.E.CG [C08y0 + 4x<64>],  c7;
-//-:-:-:-:00 ST.E.CG [C08y0 + 4x<128>], c8;
 
-//-:-:-:-:00 ST.E.CG [C12y0 + 4x<00>],  c9;
-//-:-:-:-:00 ST.E.CG [C12y0 + 4x<64>],  c10;
-//-:-:-:-:00 ST.E.CG [C12y0 + 4x<128>], c11;
 -:-:-:-:00 ISETP.NE.AND P6, PT, beta, RZ, PT; 
 -:-:-:-:00 ISETP.LT.AND P4, PT, cx128, param_n, PT; 
 -:-:-:-:00 ISETP.LT.AND P5, PT, cx128, param_n, PT; 
@@ -522,7 +428,6 @@ T:-:D:S:00 \@P0 TEXDEPBAR 0x0;
 -:-:-:-:00 @P0 ST.E.CG [C12y0 + 4x<128>], c11;
 -:-:-:-:00 IADD   cy12, cy12, 1;
 
-//----------------------------------------------------------
 -:-:-:-:00 IADD C00y0.CC, C00y0, ldc1;
 -:-:-:-:00 IADD.X C00y1, C00y1, RZ;
 
@@ -535,5 +440,4 @@ T:-:D:S:00 \@P0 TEXDEPBAR 0x0;
 -:-:-:-:00 IADD C12y0.CC, C12y0, ldc1;
 -:-:-:-:00 IADD.X C12y1, C12y1, RZ;
 
-//----------------------------------------------------------
 -:-:-:-:00 RET;

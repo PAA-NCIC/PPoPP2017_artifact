@@ -94,13 +94,10 @@
 -:-:-:-:00 MOV lda, param_lda;
 -:-:-:-:00 MOV ldb, param_ldb;
 
-// tidY  = tid1 << 2
 -:-:-:-:00 SHL tidY, tid1, 2;
 
-// tidX = tid >> 1
 -:-:-:-:00 SHR.U32 tidX, tid, 1;
 
-// trackA += 4 * ((blkA * 128 + tidX) * lda + tidY)
 -:-:-:-:00 ISCADD txa, blkA, tidX, 7;
 -:-:-:-:00 IMAD ta, lda, txa, tidY;
 -:-:-:-:00 IMAD ta, ldaz, blkZ, ta;
@@ -110,7 +107,6 @@
 -:-:-:-:00 IADD trackA0.CC, tmp_shl, tmp_param0;
 -:-:-:-:00 IADD.X trackA1, RZ, tmp_param1;
 
-// trackB += 4 * ((blkB * 128 + tidX) * ldb + tidY)
 -:-:-:-:00 ISCADD txb, blkB, tidX, 7;
 -:-:-:-:00 IMAD tb, ldb, txb, tidY;
 -:-:-:-:00 IMAD tb, ldbz, blkZ, tb;
@@ -123,19 +119,16 @@
 -:-:-:-:00 ISETP.LT.AND P5, PT, txa, param_m, PT;
 -:-:-:-:00 ISETP.LT.AND P6, PT, txb, param_n, PT;
 
-// writeS = 4 * (128 * tidY + tidX)
 -:-:-:-:00 ISCADD writeS, tidY, tidX, 7;
 -:-:-:-:00 SHL    writeS, writeS, 2;
 
 -:-:-:-:00 LOP.XOR writeS, writeS, 4x<128*8*2>;
 
-// readAs = (((tid & 0x70) >> 3) | (tid & 1)) << 4
 -:-:-:-:00 LOP.AND readAs, tid,    0x70;
 -:-:-:-:00 SHR.U32 readAs, readAs, 3;
 -:-:-:-:00 LOP.OR  readAs, readAs, tid1;
 -:-:-:-:00 SHL     readAs, readAs, 4;
 
-// readBs = ((tid128 >> 4) | ((tid >> 1) & 7)) << 4 + 4096;
 -:-:-:-:00 LOP.AND tid128, tid,  128;
 -:-:-:-:00 BFE.U32 tid7,   tid,    0x301; // 3 bits at position 1
 -:-:-:-:00 SHR.U32 readBs, tid128, 4;
@@ -149,19 +142,15 @@ REMAINDER:
 
 <CODE>
     return q{
-      // k must be multiple of 4
-      // load if tidY < k (tidY == 0 if mod 4 not mod 8)
       -:-:-:-:00 ISETP.LT.AND P5, PT, tidY, k, P5;
       -:-:-:-:00 @P5 LD.E.CI.128 loadA0, [trackA + 4x<0>];
 
-      // load if tidY < k (tidY == 0 if mod 4 not mod 8)
       -:-:-:-:00 ISETP.LT.AND P6, PT, tidY, k, P6;
       -:-:-:-:00 @P6 LD.E.CI.128 loadB0, [trackB + 4x<0>];
 
       -:-:-:-:00 @!P5 LDS.128 loadA0, [RZ + addr_zero];
       -:-:-:-:00 @!P6 LDS.128 loadB0, [RZ + addr_zero];
 
-      // bDoRemainder = k & 7 && k > 8
       -:-:-:-:00 LOP.AND k_and, k, 7;
       -:-:-:-:00 ISETP.EQ.AND P1, PT, k_and, RZ, PT;
       -:-:-:-:00 ISETP.GT.AND P1, PT, k, 8, !P1;

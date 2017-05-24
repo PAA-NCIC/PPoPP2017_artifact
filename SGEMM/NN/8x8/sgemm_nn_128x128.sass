@@ -42,7 +42,6 @@
 
   0-63 : czero<00-63>
 
-  // avoid ffma single instruction bank conflict
 
    1,  4, 17, 20, 33, 36, 49, 52 : cx<0-7>y0
    5,  0, 21, 16, 37, 32, 53, 48 : cx<0-7>y1
@@ -67,7 +66,6 @@
   104-107 : trackA<0-1>, trackB<0-1>
 
   108-112 ~ writeAs, writeBs, k, k_and, tidAY
-  // to avoid lds bank conflict with ffma 
   117 ~ readAs
   116 ~ readBs
   115 ~ tid
@@ -96,14 +94,11 @@
   join('', map sprintf("-:-:-:-:00 LDS.128 czero%02d, [RZ + addr_zero];\n", $_ * 4), 0..15);
 </CODE>
 
-// tidAY  = (tid & 1) << 2
 -:-:-:-:00 LOP.AND tid1,  tid,  1;
 -:-:-:-:00 SHL     tidAY, tid1, 2;
 
-// tidAX = tid >> 1
 -:-:-:-:00 SHR.U32 tidAX, tid, 1;
 
-// trackA += 4 * ((blkA*128 + tidAX) * lda + tidAY)
 -:-:-:-:00 ISCADD txa, blkA, tidAX, 7;
 -:-:-:-:00 IMAD   ta, lda, txa, tidAY;
 -:-:-:-:00 IMAD   ta, ldaz, blkZ, ta;
@@ -115,13 +110,10 @@
 
 -:-:-:-:00 ISETP.LT.AND P5, PT, txa, param_m, PT;
 
-// tidBX = (tid & 31) << 2
-// tidBY = (tid >> 5) & 7
 -:-:-:-:00 LOP.AND tid31, tid, 31;
 -:-:-:-:00 SHL     tidBX, tid31, 2;
 -:-:-:-:00 BFE.U32 tidBY, tid, 0x305; // 3 bits at position 5
 
-// trackB += (blkB*128 + ldb*tidBY + tidBX) * 4
 -:-:-:-:00 ISCADD txb, blkB, tidBX, 7;
 -:-:-:-:00 IMAD tb, ldb, tidBY, txb;
 -:-:-:-:00 IMAD tb, ldbz, blkZ, tb;
@@ -133,21 +125,17 @@
 
 -:-:-:-:00 ISETP.LT.AND P6, PT, txb, param_n, PT;
 
-// writeAs = 4 * (128 * tidAY + tidAX)
 -:-:-:-:00 ISCADD writeAs, tidAY, tidAX, 7;
 -:-:-:-:00 ISCADD writeAs, writeAs, 4x<128*8*2>, 2;
 
-// writeBs = (128*tidBY + tidBX) * 4
 -:-:-:-:00 ISCADD writeBs, tidBY, tidBX, 7;
 -:-:-:-:00 ISCADD writeBs, writeBs, 4x<128*8*3>, 2;
 
-// readAs  = (((tid & 0x70) >> 3) | (tid & 1)) << 4
 -:-:-:-:00 LOP.AND readAs, tid,    0x70;
 -:-:-:-:00 SHR.U32 readAs, readAs, 3;
 -:-:-:-:00 LOP.OR  readAs, readAs, tid1;
 -:-:-:-:00 SHL     readAs, readAs, 4;
 
-// readBs = ((tid128 >> 4) | ((tid >> 1) & 7)) << 4 + 4096;
 -:-:-:-:00 LOP.AND tid128, tid,    128;
 -:-:-:-:00 BFE.U32 tid7,   tid,    0x301; // 3 bits at position 1
 -:-:-:-:00 SHR.U32 readBs, tid128, 4;
@@ -158,28 +146,12 @@
 
 <CODE>
     return q{
-      // k must be a multiple of 4
-      // n must be a multiple of 4
-      //       -
-      //       -
-      //       -
-      //       -
-      // tidBY --------------- trackB ---- loadB0
-      //            blkB    tidBX
       -:-:-:-:00 @P6 LD.E.CI.128 loadB0, [trackB];
 
-      //       -
-      //       -
-      // blkA  -
-      //       -
-      //       -
-      // tidAX ---- trackA ---- loadA0 -------- loadA4
 
-      // load if tidAY < k (tidAY == 0 if mod 4 not mod 8)
       -:-:-:-:00 ISETP.LT.AND P5, PT, tidAY, k, P5;
       -:-:-:-:00 @P5 LD.E.CI.128 loadA0, [trackA];
 
-      // bDoRemainder = k & 7 && k > 8
       -:-:-:-:00 LOP.AND k_and, k, 7;
       -:-:-:-:00 ISETP.EQ.AND P1, PT, k_and, RZ, PT;
       -:-:-:-:00 ISETP.GT.AND P1, PT, k, 8, !P1;
@@ -187,22 +159,9 @@
       -:-:-:-:00 @!P6 LDS.128 loadB0, [RZ + addr_zero];
       -:-:-:-:00 @!P5 LDS.128 loadA0, [RZ + addr_zero];
 
-      // ----------------------
-      // ---------------------- 
-      // ---------------------- tidBY
-      // ----- writeBS ---- loadB0
-      // tidBX
 
       -:-:-:-:00 STS.128 [writeBs], loadB0;
 
-      // ------------------
-      // ------------------ tidAY 0, 4
-      // ------------------
-      // ------ writeAS - loadA0
-      // ---------------- loadA1
-      // ---------------- loadA2
-      // ---------------- loadA3
-      // tidAX
       -:-:-:-:00 STS [writeAs + 4x<0*128>], loadA0;
       -:-:-:-:00 STS [writeAs + 4x<1*128>], loadA1;
       -:-:-:-:00 STS [writeAs + 4x<2*128>], loadA2;
@@ -222,13 +181,11 @@
 -:-:-:-:00 LOP.XOR writeAs, writeAs, 4x<128*8*2>;
 -:-:-:-:00 LOP.XOR writeBs, writeBs, 4x<128*8*2>;
 
-// instruction align
 
 <CODE>
     my $k_end = 16;
     our %insert =
     (
-        # P0 must be the topest
         j0c47 => "-:-:-:-:00 ISETP.GE.AND P2, PT, k, $k_end, P5;\n",
         j0c53 => "-:-:-:-:00 ISETP.GE.AND P3, PT, k, $k_end, P6;\n",
         j0c62 => "-:G:D:-:00 \@P2 LDG.E.CI.128 loadA0, [trackA];\n",
